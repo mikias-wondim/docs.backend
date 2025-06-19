@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Domain.Projects;
 using Domain.Todos;
 using Domain.Users;
 using Infrastructure.DomainEvents;
@@ -15,6 +16,8 @@ public sealed class ApplicationDbContext(
     public DbSet<User> Users { get; set; }
 
     public DbSet<TodoItem> TodoItems { get; set; }
+    
+    public DbSet<Project> Projects { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,7 +52,7 @@ public sealed class ApplicationDbContext(
             .Select(entry => entry.Entity)
             .SelectMany(entity =>
             {
-                List<IDomainEvent> domainEvents = entity.DomainEvents;
+                IReadOnlyCollection<IDomainEvent> domainEvents = entity.DomainEvents;
 
                 entity.ClearDomainEvents();
 

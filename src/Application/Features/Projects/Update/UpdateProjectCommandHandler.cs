@@ -1,0 +1,48 @@
+using Application.Abstractions.Authentication;
+using Application.Abstractions.Data;
+using Application.Abstractions.Messaging;
+using Domain.Projects;
+using Domain.Users;
+using Microsoft.EntityFrameworkCore;
+using SharedKernel;
+
+namespace Application.Features.Projects.Update;
+
+public class UpdateProjectCommandHandler(
+    IApplicationDbContext context,
+    IDateTimeProvider dateTimeProvider,
+    IUserContext userContext
+    ): ICommandHandler<UpdateProjectCommand, Guid>
+{
+    public async Task<Result<Guid>> Handle(UpdateProjectCommand command, CancellationToken cancellationToken)
+    {
+        Project? project = await context.Projects
+            .SingleOrDefaultAsync(p => p.Id == command.ProjectId && p.OwnerId == userContext.UserId, cancellationToken);
+        
+        User? user = await context.Users.AsNoTracking()
+            .SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
+        
+        if (user is null)
+        {
+            return Result.Failure<Guid>(UserErrors.NotFound(userContext.UserId));
+        }
+        
+        if (project is null)
+        {
+            return Result.Failure<Guid>(ProjectErrors.NotFound(command.ProjectId));
+        }
+        
+        string updatedBy = $"{user.FirstName} {user.LastName} ({user.Id})";
+        
+        project.Update(
+            command.Name,
+            command.Description,
+            command.Visibility,
+            updatedBy,
+            dateTimeProvider.GetNow);
+        
+        await context.SaveChangesAsync(cancellationToken);
+
+        return command.ProjectId;
+    }
+}

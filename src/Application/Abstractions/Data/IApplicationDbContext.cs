@@ -1,4 +1,5 @@
-﻿using Domain.Todos;
+﻿using Domain.Projects;
+using Domain.Todos;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
     DbSet<TodoItem> TodoItems { get; }
+    DbSet<Project> Projects { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

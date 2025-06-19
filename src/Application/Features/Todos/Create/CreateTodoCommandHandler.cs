@@ -14,6 +14,8 @@ internal sealed class CreateTodoCommandHandler(
     IUserContext userContext)
     : ICommandHandler<CreateTodoCommand, Guid>
 {
+    public IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
+
     public async Task<Result<Guid>> Handle(CreateTodoCommand command, CancellationToken cancellationToken)
     {
         if (userContext.UserId != command.UserId)
@@ -37,7 +39,6 @@ internal sealed class CreateTodoCommandHandler(
             DueDate = command.DueDate,
             Labels = command.Labels,
             IsCompleted = false,
-            CreatedAt = dateTimeProvider.GetNow
         };
 
         todoItem.Raise(new TodoItemCreatedDomainEvent(todoItem.Id));

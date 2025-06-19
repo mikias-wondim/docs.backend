@@ -9,6 +9,7 @@ namespace Application.Features.Users.Register;
 
 internal sealed class RegisterUserCommandHandler(
     IApplicationDbContext context,
+    IDateTimeProvider dateTimeProvider,
     IPasswordHasher passwordHasher)
     : ICommandHandler<RegisterUserCommand, Guid>
 {
@@ -19,16 +20,17 @@ internal sealed class RegisterUserCommandHandler(
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
         }
 
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = command.Email,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            PasswordHash = passwordHasher.Hash(command.Password)
-        };
-
-        user.Raise(new UserRegisteredDomainEvent(user.Id));
+        string createdBy = string.Empty;
+        
+        var user = new User(
+            Guid.NewGuid(),
+            command.Email,
+            passwordHasher.Hash(command.Password),
+            command.FirstName,
+            command.LastName,
+            dateTimeProvider.GetNow,
+            createdBy
+        );
 
         context.Users.Add(user);
 
