@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using static System.Guid;
 
 namespace Infrastructure.Authorization;
 
@@ -11,12 +12,27 @@ internal sealed class PermissionAuthorizationHandler(IServiceScopeFactory servic
         AuthorizationHandlerContext context,
         PermissionRequirement requirement)
     {
-        // TODO: You definitely want to reject unauthenticated users here.
-        if (context.User is { Identity.IsAuthenticated: true })
+        // 1) Must be authenticated
+        if (context.User.Identity is not { IsAuthenticated: true })
         {
-            // TODO: Remove this call when you implement the PermissionProvider.GetForUserIdAsync
-            context.Succeed(requirement);
+            context.Fail();
+            return;
+        }
 
+        // 2) Must have a valid GUID in NameIdentifier
+        Guid userId;
+        try
+        {
+            userId = context.User.GetUserId();
+            if (userId == Empty)
+            {
+                context.Fail();
+                return;
+            }
+        }
+        catch (Exception)
+        {
+            context.Fail();
             return;
         }
 
@@ -24,10 +40,8 @@ internal sealed class PermissionAuthorizationHandler(IServiceScopeFactory servic
 
         PermissionProvider permissionProvider = scope.ServiceProvider.GetRequiredService<PermissionProvider>();
 
-        Guid userId = context.User.GetUserId();
-
         HashSet<string> permissions = await permissionProvider.GetForUserIdAsync(userId);
-
+        
         if (permissions.Contains(requirement.Permission))
         {
             context.Succeed(requirement);

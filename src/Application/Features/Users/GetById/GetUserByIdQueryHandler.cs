@@ -1,13 +1,14 @@
 ﻿using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using AutoMapper;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Features.Users.GetById;
 
-internal sealed class GetUserByIdQueryHandler(IApplicationDbContext context, IUserContext userContext)
+internal sealed class GetUserByIdQueryHandler(IApplicationDbContext context, IUserContext userContext, IMapper mapper)
     : IQueryHandler<GetUserByIdQuery, UserResponse>
 {
     public async Task<Result<UserResponse>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
@@ -17,17 +18,17 @@ internal sealed class GetUserByIdQueryHandler(IApplicationDbContext context, IUs
             return Result.Failure<UserResponse>(UserErrors.Unauthorized());
         }
 
-        UserResponse? user = await context.Users
+        User? user = await context.Users
             .Where(u => u.Id == query.UserId)
-            .Select(u => new UserResponse
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email
-            })
-            .SingleOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
 
-        return user ?? Result.Failure<UserResponse>(UserErrors.NotFound(query.UserId));
+        if (user is null)
+        {
+            return Result.Failure<UserResponse>(UserErrors.NotFound(query.UserId));
+        }
+
+        UserResponse response = mapper.Map<UserResponse>(user);
+        
+        return response ?? Result.Failure<UserResponse>(UserErrors.NotFound(query.UserId));
     }
 }

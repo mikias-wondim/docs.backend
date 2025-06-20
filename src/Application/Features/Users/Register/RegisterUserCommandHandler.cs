@@ -9,10 +9,12 @@ namespace Application.Features.Users.Register;
 
 internal sealed class RegisterUserCommandHandler(
     IApplicationDbContext context,
-    IDateTimeProvider dateTimeProvider,
-    IPasswordHasher passwordHasher)
+    IPasswordHasher passwordHasher,
+    IDateTimeProvider dateTimeProvider)
     : ICommandHandler<RegisterUserCommand, Guid>
 {
+    private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
+
     public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
     {
         if (await context.Users.AnyAsync(u => u.Email == command.Email, cancellationToken))
@@ -20,16 +22,16 @@ internal sealed class RegisterUserCommandHandler(
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
         }
 
-        string createdBy = string.Empty;
-        
+        const string createdBy = "Guest User";
+
         var user = new User(
-            Guid.NewGuid(),
-            command.Email,
-            passwordHasher.Hash(command.Password),
-            command.FirstName,
-            command.LastName,
-            dateTimeProvider.GetNow,
-            createdBy
+            id: Guid.NewGuid(),
+            email: command.Email,
+            passwordHash: passwordHasher.Hash(command.Password),
+            firstName: command.FirstName,
+            lastName: command.LastName,
+            createdBy: createdBy,
+            timestamp: DateTimeProvider.GetNow
         );
 
         context.Users.Add(user);

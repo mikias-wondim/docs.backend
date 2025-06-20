@@ -1,4 +1,5 @@
-﻿using SharedKernel;
+﻿using Domain.Projects;
+using SharedKernel;
 
 namespace Domain.Users;
 
@@ -8,7 +9,7 @@ public sealed class User : Entity
     public string PasswordHash { get; private set; }
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
-    
+
     public string? DisplayName { get; private set; }
     public string? AvatarUrl { get; private set; }
     public string? Bio { get; private set; }
@@ -16,8 +17,13 @@ public sealed class User : Entity
     public bool EmailVerified { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
 
-    // public Dictionary<string, object> Settings { get; private set; } = [];
+    // === Navigation Properties ===
+    public List<Project> Projects { get; private set; } = [];
 
+    // Required by EF Core
+    public User()
+    {
+    }
 
     public User(
         Guid id,
@@ -25,8 +31,8 @@ public sealed class User : Entity
         string passwordHash,
         string firstName,
         string lastName,
-        DateTime timestamp,
-        string createdBy)
+        string createdBy,
+        DateTime timestamp)
         : base(id)
     {
         Email = email;
@@ -35,21 +41,25 @@ public sealed class User : Entity
         LastName = lastName;
 
         RegisterAudit(timestamp, createdBy);
-        
+
         Raise(new UserRegisteredDomainEvent(Id));
     }
 
     // === Domain Methods ===
 
     public void UpdateProfile(
+        string firstName,
+        string lastName,
         string? displayName,
-        string? avatarUrl,
+        Uri? avatarUrl,
         string? bio,
         string updatedBy,
         DateTime timestamp)
     {
+        FirstName = firstName;
+        LastName = lastName;
         DisplayName = displayName;
-        AvatarUrl = avatarUrl;
+        AvatarUrl = avatarUrl?.ToString();
         Bio = bio;
 
         UpdateAudit(timestamp, updatedBy);
@@ -70,10 +80,5 @@ public sealed class User : Entity
     public void RecordLogin(DateTime loginTime)
     {
         LastLoginAt = loginTime;
-    }
-
-    public void UpdateProfile(string? displayName, Uri avatarUrl, string? bio, string updatedBy, DateTime timestamp)
-    {
-        throw new NotImplementedException();
     }
 }

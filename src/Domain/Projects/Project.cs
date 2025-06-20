@@ -10,7 +10,10 @@ public sealed class Project : Entity
     public ProjectVisibility Visibility { get; private set; }
     public string? OverviewMd { get; private set; }
     
-    // === Constructor ===
+    // Required by EF Core
+    public Project()
+    { }
+    
     public Project(
         Guid id,
         Guid ownerId,

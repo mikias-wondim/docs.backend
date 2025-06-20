@@ -14,6 +14,8 @@ public class UpdateProjectCommandHandler(
     IUserContext userContext
     ): ICommandHandler<UpdateProjectCommand, Guid>
 {
+    
+    private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
     public async Task<Result<Guid>> Handle(UpdateProjectCommand command, CancellationToken cancellationToken)
     {
         Project? project = await context.Projects
@@ -39,7 +41,7 @@ public class UpdateProjectCommandHandler(
             command.Description,
             command.Visibility,
             updatedBy,
-            dateTimeProvider.GetNow);
+            DateTimeProvider.GetNow);
         
         await context.SaveChangesAsync(cancellationToken);
 
