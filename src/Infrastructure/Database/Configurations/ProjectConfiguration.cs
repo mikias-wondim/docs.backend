@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Database.Configurations;
 
-public class ProjectConfiguration: EntityConfiguration<Project>
+internal sealed class ProjectConfiguration: EntityConfiguration<Project>
 {
     protected override void ConfigureEntity(EntityTypeBuilder<Project> builder)
     {

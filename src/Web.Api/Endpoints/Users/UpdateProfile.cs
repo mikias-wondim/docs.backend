@@ -20,7 +20,7 @@ public class UpdateProfile : IEndpoint
     {
         app.MapPut("users/{userId:guid}/update-profile", async (
                 [FromRoute] Guid userId,
-                [FromBody] Request request,
+                [FromForm] Request request,
                 ICommandHandler<UpdateProfileCommand, Guid> handler,
                 CancellationToken cancellationToken) =>
             {
@@ -36,6 +36,8 @@ public class UpdateProfile : IEndpoint
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })
+            .RequireAuthorization()
+            .DisableAntiforgery()
             .WithTags(Tags.Users);
     }
 }

@@ -15,14 +15,6 @@ public static class UserErrors
     public static readonly Error NotFoundByEmail = Error.NotFound(
         "Users.NotFoundByEmail",
         "The user with the specified email was not found");
-    
-    public static readonly Error InvalidCredential = Error.Unauthorized(
-        "Users.InvalidCredential",
-        "The provided credentials are invalid");
-    
-    public static readonly Error IncorrectPassword = Error.Validation(
-        "Users.IncorrectPassword",
-        "The current password provided is incorrect.");
 
     public static readonly Error EmailNotUnique = Error.Conflict(
         "Users.EmailNotUnique",

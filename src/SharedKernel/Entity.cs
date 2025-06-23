@@ -28,7 +28,10 @@ public abstract class Entity(Guid id)
 
     public void ClearDomainEvents() => _domainEvents.Clear();
 
-    public void Raise(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+    public void Raise(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
 
     protected void RegisterAudit(DateTime timestamp, string createdBy)
     {

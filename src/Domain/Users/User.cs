@@ -15,6 +15,7 @@ public sealed class User : Entity
     public string? Bio { get; private set; }
 
     public bool EmailVerified { get; private set; }
+    public DateTime? EmailVerifiedAt { get; set; }
     public DateTime? LastLoginAt { get; private set; }
 
     // === Navigation Properties ===
@@ -41,8 +42,6 @@ public sealed class User : Entity
         LastName = lastName;
 
         RegisterAudit(timestamp, createdBy);
-
-        Raise(new UserRegisteredDomainEvent(Id));
     }
 
     // === Domain Methods ===
@@ -71,10 +70,10 @@ public sealed class User : Entity
         UpdateAudit(timestamp, updatedBy);
     }
 
-    public void VerifyEmail(DateTime timestamp, string updatedBy)
+    public void VerifyEmail(DateTime timestamp)
     {
         EmailVerified = true;
-        UpdateAudit(timestamp, updatedBy);
+        EmailVerifiedAt = timestamp;
     }
 
     public void RecordLogin(DateTime loginTime)

@@ -13,6 +13,7 @@ internal sealed class DomainEventsDispatcher(IServiceProvider serviceProvider) :
         IEnumerable<IDomainEvent> domainEvents,
         CancellationToken cancellationToken = default)
     {
+        
         foreach (IDomainEvent domainEvent in domainEvents)
         {
             using IServiceScope scope = serviceProvider.CreateScope();

@@ -1,13 +1,14 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Auth;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
 namespace Application.Features.Users.ChangePassword;
 
-public class ChangePasswordCommandHandler(
+internal sealed class ChangePasswordCommandHandler(
     IApplicationDbContext context,
     IUserContext userContext,
     IPasswordHasher passwordHasher,
@@ -17,12 +18,19 @@ public class ChangePasswordCommandHandler(
     private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
     public async Task<Result<bool>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
     {
-        if (userContext.UserId != command.UserId)
+        try
+        {
+            if (userContext.UserId != command.UserId)
+            {
+                return Result.Failure<bool>(UserErrors.Unauthorized());
+            }
+        }
+        catch (ApplicationException)
         {
             return Result.Failure<bool>(UserErrors.Unauthorized());
         }
         
-        User? user = await context.Users.AsNoTracking()
+        User? user = await context.Users
             .SingleOrDefaultAsync(u => u.Id == command.UserId, cancellationToken);
         
         if (user is null)
@@ -34,7 +42,7 @@ public class ChangePasswordCommandHandler(
 
         if (!verified)
         {
-            return Result.Failure<bool>(UserErrors.IncorrectPassword);
+            return Result.Failure<bool>(AuthErrors.IncorrectPassword);
         }
         
         string updatedBy = $"{user.FirstName} {user.LastName} ({user.Id})";
@@ -43,6 +51,8 @@ public class ChangePasswordCommandHandler(
             passwordHasher.Hash(command.NewPassword),
             updatedBy,
             DateTimeProvider.GetNow);
+        
+        user.Raise(new UserPasswordChangedDomainEvent(user.Id));
         
         bool isUpdated = await context.SaveChangesAsync(cancellationToken) > 0;
 

@@ -36,6 +36,8 @@ internal sealed class RegisterUserCommandHandler(
 
         context.Users.Add(user);
 
+        user.Raise(new UserRegisteredDomainEvent(user.Id));
+        
         await context.SaveChangesAsync(cancellationToken);
 
         return user.Id;

@@ -7,7 +7,7 @@ using SharedKernel;
 
 namespace Application.Features.Users.UpdateProfile;
 
-public class UpdateProfileCommandHandler(
+internal sealed class UpdateProfileCommandHandler(
     IApplicationDbContext context,
     IDateTimeProvider dateTimeProvider,
     IUserContext userContext
@@ -16,12 +16,19 @@ public class UpdateProfileCommandHandler(
     private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
     public async Task<Result<Guid>> Handle(UpdateProfileCommand command, CancellationToken cancellationToken)
     {
-        if (userContext.UserId != command.UserId)
+        try
+        {
+            if (userContext.UserId != command.UserId)
+            {
+                return Result.Failure<Guid>(UserErrors.Unauthorized());
+            }
+        }
+        catch (ApplicationException)
         {
             return Result.Failure<Guid>(UserErrors.Unauthorized());
         }
         
-        User? user = await context.Users.AsNoTracking()
+        User? user = await context.Users
             .SingleOrDefaultAsync(u => u.Id == command.UserId, cancellationToken);
         
         if (user is null)

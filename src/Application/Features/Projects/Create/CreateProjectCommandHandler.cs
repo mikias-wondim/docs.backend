@@ -8,7 +8,7 @@ using SharedKernel;
 
 namespace Application.Features.Projects.Create;
 
-public class CreateProjectCommandHandler(
+internal sealed class CreateProjectCommandHandler(
     IApplicationDbContext context,
     IDateTimeProvider dateTimeProvider,
     IUserContext userContext

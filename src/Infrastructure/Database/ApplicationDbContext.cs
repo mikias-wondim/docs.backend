@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Data;
+using Domain.Auth;
 using Domain.Projects;
 using Domain.Todos;
 using Domain.Users;
@@ -14,9 +15,9 @@ public sealed class ApplicationDbContext(
     : DbContext(options), IApplicationDbContext
 {
     public DbSet<User> Users { get; set; }
-
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
     public DbSet<TodoItem> TodoItems { get; set; }
-    
     public DbSet<Project> Projects { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,16 +29,6 @@ public sealed class ApplicationDbContext(
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // When should you publish domain events?
-        //
-        // 1. BEFORE calling SaveChangesAsync
-        //     - domain events are part of the same transaction
-        //     - immediate consistency
-        // 2. AFTER calling SaveChangesAsync
-        //     - domain events are a separate transaction
-        //     - eventual consistency
-        //     - handlers can fail
-
         int result = await base.SaveChangesAsync(cancellationToken);
 
         await PublishDomainEventsAsync();
@@ -47,19 +38,19 @@ public sealed class ApplicationDbContext(
 
     private async Task PublishDomainEventsAsync()
     {
-        var domainEvents = ChangeTracker
+        var domainEventEntities = ChangeTracker
             .Entries<Entity>()
+            .Where(entry => entry.Entity.DomainEvents.Any())
             .Select(entry => entry.Entity)
-            .SelectMany(entity =>
-            {
-                IReadOnlyCollection<IDomainEvent> domainEvents = entity.DomainEvents;
-
-                entity.ClearDomainEvents();
-
-                return domainEvents;
-            })
             .ToList();
 
-        await domainEventsDispatcher.DispatchAsync(domainEvents);
+        var allDomainEvents = domainEventEntities
+            .SelectMany(entity => entity.DomainEvents)
+            .ToList();
+
+        // Clear events after collecting them to avoid mutation during dispatch
+        domainEventEntities.ForEach(entity => entity.ClearDomainEvents());
+
+        await domainEventsDispatcher.DispatchAsync(allDomainEvents);
     }
 }

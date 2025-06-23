@@ -1,10 +1,13 @@
-﻿using System.Text;
+﻿using System.Net.Mail;
+using System.Text;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
+using Infrastructure.Services;
 using Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +30,8 @@ public static class DependencyInjection
             .AddDatabase(configuration)
             .AddHealthChecks(configuration)
             .AddAuthenticationInternal(configuration)
-            .AddAuthorizationInternal();
+            .AddAuthorizationInternal()
+            .AddEmailService(configuration);
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
@@ -96,6 +100,27 @@ public static class DependencyInjection
 
         services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
+        return services;
+    }
+    
+    private static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddFluentEmail(configuration["Email:FromEmail"])
+            .AddRazorRenderer()
+            .AddSmtpSender(() => new SmtpClient()
+            {
+                Host = configuration["Email:SmtpHost"] ?? "",
+                Port = int.TryParse(configuration["Email:SmtpPort"], out int port) ? port : 587,
+                EnableSsl = true,
+                Credentials = new System.Net.NetworkCredential(
+                    configuration["Email:FromEmail"],
+                    configuration["Email:SmtpPassword"])
+            });
+
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+        
         return services;
     }
 }

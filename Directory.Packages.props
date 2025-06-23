@@ -6,6 +6,8 @@
   <ItemGroup>
     <!-- Static code analysis -->
     <PackageVersion Include="AutoMapper" Version="14.0.0" />
+    <PackageVersion Include="FluentEmail.Razor" Version="3.0.2" />
+    <PackageVersion Include="FluentEmail.Smtp" Version="3.0.2" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.10.0.116381" />
     <!-- Application -->
     <PackageVersion Include="Scrutor" Version="6.1.0" />

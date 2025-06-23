@@ -7,7 +7,7 @@ using Web.Api.Infrastructure;
 
 namespace Web.Api.Endpoints.Users;
 
-public class ChangePassword: IEndpoint
+public class ChangePassword : IEndpoint
 {
     private sealed record Request(
         string CurrentPassword,
@@ -30,6 +30,7 @@ public class ChangePassword: IEndpoint
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })
+            .RequireAuthorization()
             .WithTags(Tags.Users);
     }
 }

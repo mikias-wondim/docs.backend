@@ -22,8 +22,6 @@ builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
 WebApplication app = builder.Build();
 
-app.MapEndpoints();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithUi();
@@ -45,6 +43,8 @@ app.UseExceptionHandler();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapEndpoints();
 
 // REMARK: If you want to use Controllers, you'll need this.
 app.MapControllers();

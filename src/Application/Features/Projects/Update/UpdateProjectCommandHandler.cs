@@ -8,7 +8,7 @@ using SharedKernel;
 
 namespace Application.Features.Projects.Update;
 
-public class UpdateProjectCommandHandler(
+internal sealed class UpdateProjectCommandHandler(
     IApplicationDbContext context,
     IDateTimeProvider dateTimeProvider,
     IUserContext userContext
