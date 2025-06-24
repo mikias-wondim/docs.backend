@@ -9,10 +9,10 @@ namespace Web.Api.Endpoints.Auth;
 
 internal sealed class VerifyEmail: IEndpoint
 {
-    public const string EmailVerification = "VerifyEmail";
+    public const string UriName = "VerifyEmail";
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("auth/verify-email", async (
+        app.MapGet("auth/verify-email", async (
                 [FromQuery] string token,
                 ICommandHandler<VerifyEmailCommand, bool> handler,
                 CancellationToken cancellationToken) =>
@@ -23,7 +23,7 @@ internal sealed class VerifyEmail: IEndpoint
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })
-            .WithName(EmailVerification)
+            .WithName(UriName)
             .WithTags(Tags.Auth);
     }
 }

@@ -2,7 +2,7 @@ namespace SharedKernel;
 
 public enum RecordStatus
 {
+    Active = 0,
     InActive = 1,
-    Active = 2,
-    Deleted = 3
+    Deleted = 2
 }

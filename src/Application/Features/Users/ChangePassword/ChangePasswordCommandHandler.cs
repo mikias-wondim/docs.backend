@@ -22,12 +22,12 @@ internal sealed class ChangePasswordCommandHandler(
         {
             if (userContext.UserId != command.UserId)
             {
-                return Result.Failure<bool>(UserErrors.Unauthorized());
+                return Result.Failure<bool>(UserErrors.Forbidden);
             }
         }
         catch (ApplicationException)
         {
-            return Result.Failure<bool>(UserErrors.Unauthorized());
+            return Result.Failure<bool>(UserErrors.Forbidden);
         }
         
         User? user = await context.Users

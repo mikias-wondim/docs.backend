@@ -17,9 +17,16 @@ internal sealed class CreateProjectCommandHandler(
     private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
     public async Task<Result<Guid>> Handle(CreateProjectCommand command, CancellationToken cancellationToken)
     {
-        if (userContext.UserId != command.OwnerId)
+        try
         {
-            return Result.Failure<Guid>(UserErrors.Unauthorized());
+            if (userContext.UserId != command.OwnerId)
+            {
+                return Result.Failure<Guid>(UserErrors.Forbidden);
+            }
+        }
+        catch (ApplicationException)
+        {
+            return Result.Failure<Guid>(UserErrors.Forbidden);
         }
         
         User? user = await context.Users.AsNoTracking()

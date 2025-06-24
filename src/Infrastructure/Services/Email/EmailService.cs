@@ -1,8 +1,9 @@
 using Application.Abstractions.Services;
+using Application.Abstractions.Services.Email;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Services.Email;
 
 public class EmailService(IFluentEmail fluentEmail): IEmailService
 {

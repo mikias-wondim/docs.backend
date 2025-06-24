@@ -20,12 +20,12 @@ internal sealed class UpdateProfileCommandHandler(
         {
             if (userContext.UserId != command.UserId)
             {
-                return Result.Failure<Guid>(UserErrors.Unauthorized());
+                return Result.Failure<Guid>(UserErrors.Forbidden);
             }
         }
         catch (ApplicationException)
         {
-            return Result.Failure<Guid>(UserErrors.Unauthorized());
+            return Result.Failure<Guid>(UserErrors.Forbidden);
         }
         
         User? user = await context.Users

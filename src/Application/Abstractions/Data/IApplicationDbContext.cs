@@ -1,4 +1,5 @@
 ﻿using Domain.Auth;
+using Domain.ProjectMembers;
 using Domain.Projects;
 using Domain.Todos;
 using Domain.Users;
@@ -13,6 +14,7 @@ public interface IApplicationDbContext
     DbSet<EmailVerificationToken> EmailVerificationTokens { get; }
     DbSet<TodoItem> TodoItems { get; }
     DbSet<Project> Projects { get; }
+    DbSet<ProjectMember> ProjectMembers { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

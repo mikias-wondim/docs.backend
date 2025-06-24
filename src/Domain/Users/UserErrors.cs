@@ -11,7 +11,11 @@ public static class UserErrors
     public static Error Unauthorized() => Error.Unauthorized(
         "Users.Unauthorized",
         "You are not authorized to perform this action.");
-
+    
+    public static readonly Error Forbidden = Error.Forbidden(
+        "Users.Forbidden",
+        "You do not have permission to perform this action.");
+    
     public static readonly Error NotFoundByEmail = Error.NotFound(
         "Users.NotFoundByEmail",
         "The user with the specified email was not found");

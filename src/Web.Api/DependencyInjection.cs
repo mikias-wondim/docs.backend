@@ -1,4 +1,6 @@
-﻿using Web.Api.Infrastructure;
+﻿using Application.Abstractions.Services.Email;
+using Web.Api.Infrastructure;
+using Web.Api.Infrastructure.Services;
 
 namespace Web.Api;
 
@@ -12,6 +14,8 @@ public static class DependencyInjection
         // REMARK: If you want to use Controllers, you'll need this.
         services.AddControllers();
 
+        services.AddScoped<IEmailLinkGenerator, EmailLinkGenerator>();
+        
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 

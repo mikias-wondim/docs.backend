@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Domain.Auth;
+using Domain.ProjectMembers;
 using Domain.Projects;
 using Domain.Todos;
 using Domain.Users;
@@ -19,6 +20,7 @@ public sealed class ApplicationDbContext(
     public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
     public DbSet<TodoItem> TodoItems { get; set; }
     public DbSet<Project> Projects { get; set; }
+    public DbSet<ProjectMember> ProjectMembers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

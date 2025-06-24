@@ -1,3 +1,5 @@
+using Domain.ProjectMembers;
+using Domain.Users;
 using SharedKernel;
 
 namespace Domain.Projects;
@@ -9,6 +11,9 @@ public sealed class Project : Entity
     public string? Description { get; private set; }
     public ProjectVisibility Visibility { get; private set; }
     public string? OverviewMd { get; private set; }
+
+    public User User { get; set; }
+    public List<ProjectMember> Members { get; set; }
     
     // Required by EF Core
     public Project()
@@ -26,6 +31,7 @@ public sealed class Project : Entity
     {
         OwnerId = ownerId;
         Name = name;
+        OverviewMd = name;
         Visibility = visibility;
         Description = description;
 

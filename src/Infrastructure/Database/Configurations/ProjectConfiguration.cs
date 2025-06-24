@@ -3,6 +3,7 @@ using Domain.Users;
 using Infrastructure.Database.Configurations.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SharedKernel;
 
 namespace Infrastructure.Database.Configurations;
 
@@ -32,5 +33,7 @@ internal sealed class ProjectConfiguration: EntityConfiguration<Project>
         // Optional: unique constraint for name per owner
         builder.HasIndex(p => new { p.OwnerId, p.Name })
             .IsUnique();
+        
+        builder.HasQueryFilter(r => r.User.RecordStatus != RecordStatus.Deleted);
     }
 }
