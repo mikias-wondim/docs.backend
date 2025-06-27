@@ -1,3 +1,5 @@
+using Application.Features.ProjectMembers;
+using Application.Features.Users;
 using Domain.Projects;
 using SharedKernel;
 
@@ -10,4 +12,7 @@ public sealed class ProjectResponse: EntityResponse
     public string? Description { get; set; }
     public ProjectVisibility Visibility { get; set; }
     public string? OverviewMd { get; set; }
+    
+    public UserSummaryResponse Owner { get; set; }
+    public List<ProjectMemberResponse> Members { get; set; }
 }

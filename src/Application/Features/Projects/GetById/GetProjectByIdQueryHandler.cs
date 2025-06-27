@@ -28,6 +28,8 @@ internal sealed class GetProjectByIdQueryHandler(
         
         Project? project = await context.Projects
             .AsNoTracking()
+            .Include(p => p.Members)
+            .Include(p => p.Owner)
             .FirstOrDefaultAsync(
                 p => p.Id == query.ProjectId &&
                      (p.Visibility == ProjectVisibility.Public || p.OwnerId == currentUserId), cancellationToken);

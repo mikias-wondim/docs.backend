@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Application.Abstractions.Authentication;
 using Domain.Users;
@@ -11,12 +10,14 @@ namespace Infrastructure.Authentication;
 
 internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
 {
-    public string Create(User user)
+    public AccessToken Create(User user)
     {
         string secretKey = configuration["Jwt:Secret"]!;
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        DateTime expiresAt = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpirationInMinutes"));
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -25,21 +26,20 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email)
             ]),
-            Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpirationInMinutes")),
+            Expires = expiresAt,
             SigningCredentials = credentials,
             Issuer = configuration["Jwt:Issuer"],
             Audience = configuration["Jwt:Audience"]
         };
 
         var handler = new JsonWebTokenHandler();
-
         string token = handler.CreateToken(tokenDescriptor);
 
-        return token;
+        return new AccessToken(token, expiresAt);
     }
 
     public string GenerateRandomToken()
     {
-        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        return Guid.NewGuid().ToString();
     }
 }

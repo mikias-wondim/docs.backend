@@ -13,8 +13,9 @@ public static class UserConstraints
     [
         "image/jpeg",
         "image/png",
+        "image/jpg",
         "image/webp"
     ];
 
-    public const int MaxFileSizeInBytes = 2 * 1024 * 1024;
+    public const int MaxFileSizeInBytes = 4 * 1024 * 1024;
 }

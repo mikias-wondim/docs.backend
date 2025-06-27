@@ -3,4 +3,4 @@ using Application.Features.Users;
 
 namespace Application.Features.Auth.Refresh;
 
-public sealed record RefreshTokenCommand(string RefreshToken): ICommand<UserLoginResponse>;
+public sealed record RefreshTokenCommand(string RefreshToken): ICommand<AuthLoginResponse>;

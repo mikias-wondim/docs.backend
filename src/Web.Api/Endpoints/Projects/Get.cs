@@ -22,7 +22,7 @@ internal sealed class Get : IEndpoint
     {
         app.MapGet("projects", async (
                 [AsParameters] QueryParams queryParams,
-                IQueryHandler<GetProjectsQuery, List<ProjectResponse>> handler,
+                IQueryHandler<GetProjectsQuery, PagedResult<ProjectResponse>> handler,
                 CancellationToken cancellationToken
             ) =>
             {
@@ -35,7 +35,7 @@ internal sealed class Get : IEndpoint
                     queryParams.PageSize
                 );
 
-                Result<List<ProjectResponse>> result = await handler.Handle(query, cancellationToken);
+                Result<PagedResult<ProjectResponse>> result = await handler.Handle(query, cancellationToken);
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })

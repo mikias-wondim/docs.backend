@@ -11,12 +11,11 @@ namespace Application.Features.Users.GetById;
 internal sealed class GetUserByIdQueryHandler(IApplicationDbContext context, IUserContext userContext, IMapper mapper)
     : IQueryHandler<GetUserByIdQuery, UserResponse>
 {
+    public IUserContext UserContext { get; } = userContext;
+
     public async Task<Result<UserResponse>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
-        if (query.UserId != userContext.UserId)
-        {
-            return Result.Failure<UserResponse>(UserErrors.Unauthorized());
-        }
+        // TODO: Check if the current user has the permission to view other users
 
         User? user = await context.Users
             .Where(u => u.Id == query.UserId)

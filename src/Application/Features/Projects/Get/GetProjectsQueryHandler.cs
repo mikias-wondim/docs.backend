@@ -12,9 +12,9 @@ internal sealed class GetProjectsQueryHandler(
     IApplicationDbContext dbContext,
     IUserContext userContext,
     IMapper mapper)
-    : IQueryHandler<GetProjectsQuery, List<ProjectResponse>>
+    : IQueryHandler<GetProjectsQuery, PagedResult<ProjectResponse>>
 {
-    public async Task<Result<List<ProjectResponse>>> Handle(GetProjectsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<ProjectResponse>>> Handle(GetProjectsQuery query, CancellationToken cancellationToken)
     {
         Guid currentUserId;
         try
@@ -51,17 +51,31 @@ internal sealed class GetProjectsQueryHandler(
                 ("createdat", "asc") => projectsQuery.OrderBy(p => p.CreatedAt),
                 _ => projectsQuery.OrderByDescending(p => p.CreatedAt)
             };
-
+        
+        // Total count before pagination
+        int totalCount = await projectsQuery.CountAsync(cancellationToken);
+        
         // Pagination
         int skip = (query.Page - 1) * query.PageSize;
         List<Project> pagedProjects = await projectsQuery
             .Skip(skip)
             .Take(query.PageSize)
+            .Include(p => p.Members)
+            .Include(p => p.Owner)
             .ToListAsync(cancellationToken);
 
         // Mapping
         List<ProjectResponse>? projectResponses = mapper.Map<List<ProjectResponse>>(pagedProjects);
+        
+        var pagedResult = new PagedResult<ProjectResponse>
+        {
+            Items = projectResponses,
+            PageNumber = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
 
-        return Result.Success(projectResponses);
+        return Result.Success(pagedResult);
+        
     }
 }

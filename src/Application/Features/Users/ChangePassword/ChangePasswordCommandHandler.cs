@@ -18,24 +18,22 @@ internal sealed class ChangePasswordCommandHandler(
     private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
     public async Task<Result<bool>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
     {
+        Guid currentUserId;
         try
         {
-            if (userContext.UserId != command.UserId)
-            {
-                return Result.Failure<bool>(UserErrors.Forbidden);
-            }
+            currentUserId = userContext.UserId;
         }
         catch (ApplicationException)
         {
-            return Result.Failure<bool>(UserErrors.Forbidden);
+            return Result.Failure<bool>(UserErrors.Unauthorized);
         }
         
-        User? user = await context.Users
-            .SingleOrDefaultAsync(u => u.Id == command.UserId, cancellationToken);
+        User? user = await context.Users.AsNoTracking()
+            .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
         
         if (user is null)
         {
-            return Result.Failure<bool>(UserErrors.NotFound(command.UserId));
+            return Result.Failure<bool>(UserErrors.NotFound(currentUserId));
         }
         
         bool verified = passwordHasher.Verify(command.CurrentPassword, user.PasswordHash);

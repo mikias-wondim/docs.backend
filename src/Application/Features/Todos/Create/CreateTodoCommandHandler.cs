@@ -20,7 +20,7 @@ internal sealed class CreateTodoCommandHandler(
     {
         if (userContext.UserId != command.UserId)
         {
-            return Result.Failure<Guid>(UserErrors.Unauthorized());
+            return Result.Failure<Guid>(UserErrors.Unauthorized);
         }
 
         User? user = await context.Users.AsNoTracking()

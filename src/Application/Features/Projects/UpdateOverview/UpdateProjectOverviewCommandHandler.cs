@@ -24,14 +24,14 @@ internal sealed class UpdateProjectOverviewCommandHandler(
         }
         catch (ApplicationException)
         {
-            return Result.Failure<Guid>(UserErrors.Unauthorized());       
+            return Result.Failure<Guid>(UserErrors.Unauthorized);       
         }
         
         Project? project = await context.Projects
-            .SingleOrDefaultAsync(p => p.Id == command.ProjectId, cancellationToken);
+            .FirstOrDefaultAsync(p => p.Id == command.ProjectId, cancellationToken);
 
         User? user = await context.Users.AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
 
         if (user is null)
         {
@@ -45,7 +45,7 @@ internal sealed class UpdateProjectOverviewCommandHandler(
 
         if (project.OwnerId != userId)
         {
-            return Result.Failure<Guid>(ProjectErrors.Unauthorized(command.ProjectId));
+            return Result.Failure<Guid>(UserErrors.Forbidden);
         }
         
         string updatedBy = $"{user.FirstName} {user.LastName} ({user.Id})";

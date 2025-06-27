@@ -16,27 +16,25 @@ internal sealed class UpdateProfileCommandHandler(
     private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
     public async Task<Result<Guid>> Handle(UpdateProfileCommand command, CancellationToken cancellationToken)
     {
+        Guid currentUserId;
         try
         {
-            if (userContext.UserId != command.UserId)
-            {
-                return Result.Failure<Guid>(UserErrors.Forbidden);
-            }
+            currentUserId = userContext.UserId;
         }
         catch (ApplicationException)
         {
-            return Result.Failure<Guid>(UserErrors.Forbidden);
+            return Result.Failure<Guid>(UserErrors.Unauthorized);
         }
         
         User? user = await context.Users
-            .SingleOrDefaultAsync(u => u.Id == command.UserId, cancellationToken);
+            .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
         
         if (user is null)
         {
-            return Result.Failure<Guid>(UserErrors.NotFound(command.UserId));
+            return Result.Failure<Guid>(UserErrors.NotFound(currentUserId));
         }
 
-        Uri? avatarUrl = null;
+        Uri? avatarUrl = user.AvatarUrl is null?  null : new Uri(user.AvatarUrl) ;
 
         if (command.Avatar != null)
         {

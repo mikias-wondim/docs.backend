@@ -1,5 +1,6 @@
 using Application.Abstractions.Messaging;
 using Domain.Projects;
+using SharedKernel;
 
 namespace Application.Features.Projects.GetOwn;
 
@@ -10,4 +11,4 @@ public record GetOwnProjectsQuery(
     string? SortOrder = "desc",
     int Page = 1,
     int PageSize = 20
-) : IQuery<List<ProjectResponse>>;
+) : IQuery<PagedResult<ProjectResponse>>;

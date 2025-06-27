@@ -13,9 +13,10 @@ namespace Application.Features.Auth.Refresh;
 public sealed class RefreshTokenCommandHandler(
     IApplicationDbContext context,
     ITokenProvider tokenProvider,
-    IMapper mapper): ICommandHandler<RefreshTokenCommand, UserLoginResponse>
+    IMapper mapper) : ICommandHandler<RefreshTokenCommand, AuthLoginResponse>
 {
-    public async Task<Result<UserLoginResponse>> Handle(RefreshTokenCommand command, CancellationToken cancellationToken)
+    public async Task<Result<AuthLoginResponse>> Handle(RefreshTokenCommand command,
+        CancellationToken cancellationToken)
     {
         RefreshToken existingToken = await context.RefreshTokens
             .Include(r => r.User)
@@ -23,32 +24,40 @@ public sealed class RefreshTokenCommandHandler(
 
         if (existingToken is null)
         {
-            return Result.Failure<UserLoginResponse>(AuthErrors.InvalidRefreshToken);
+            return Result.Failure<AuthLoginResponse>(AuthErrors.InvalidRefreshToken);
         }
 
         if (existingToken.ExpiresAtUtc < DateTime.UtcNow)
         {
-            return Result.Failure<UserLoginResponse>(AuthErrors.ExpiredRefreshToken);
+            return Result.Failure<AuthLoginResponse>(AuthErrors.ExpiredRefreshToken);
         }
-        
+
         User user = existingToken.User;
+
+        AccessToken accessToken = tokenProvider.Create(existingToken.User);
         
-        string accessToken = tokenProvider.Create(existingToken.User);
+        DateTime refreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
         var newRefreshToken = new RefreshToken(
             Guid.NewGuid(),
-            existingToken.UserId,
+            user.Id,
             tokenProvider.GenerateRandomToken(),
-            DateTime.UtcNow.AddDays(7));
+            refreshTokenExpiresAt);
+
+        await context.RefreshTokens
+            .Where(rt => rt.UserId == user.Id)
+            .ExecuteDeleteAsync(cancellationToken);
         
         context.RefreshTokens.Add(newRefreshToken);
-        context.RefreshTokens.Remove(existingToken);
         await context.SaveChangesAsync(cancellationToken);
-        
-        var response = new UserLoginResponse(
+
+        var response = new AuthLoginResponse(
             mapper.Map<UserResponse>(user),
-            accessToken,
-            newRefreshToken.Token);
-        
+            accessToken.Token,
+            accessToken.ExpiresAt,
+            newRefreshToken.Token,
+            refreshTokenExpiresAt
+        );
+
         return response;
     }
 }

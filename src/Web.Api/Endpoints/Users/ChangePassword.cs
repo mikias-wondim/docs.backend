@@ -15,20 +15,18 @@ public class ChangePassword : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("users/{userId:guid}/change-password", async (
-                [FromRoute] Guid userId,
+        app.MapPatch("/users/me/password", async (
                 [FromBody] Request request,
                 ICommandHandler<ChangePasswordCommand, bool> handler,
                 CancellationToken cancellationToken) =>
             {
                 var command = new ChangePasswordCommand(
-                    userId,
                     request.CurrentPassword,
                     request.NewPassword);
 
                 Result<bool> result = await handler.Handle(command, cancellationToken);
 
-                return result.Match(Results.Ok, CustomResults.Problem);
+                return result.Match(Results.NoContent, CustomResults.Problem);
             })
             .RequireAuthorization()
             .WithTags(Tags.Users);

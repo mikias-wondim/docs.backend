@@ -1,4 +1,5 @@
 using Application.Abstractions.Messaging;
+using Application.Features.Auth;
 using Application.Features.Auth.Refresh;
 using Application.Features.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,12 @@ internal sealed class Refresh: IEndpoint
     {
         app.MapPost("auth/refresh", async (
                 [FromBody] Request request,
-                ICommandHandler<RefreshTokenCommand, UserLoginResponse> handler,
+                ICommandHandler<RefreshTokenCommand, AuthLoginResponse> handler,
                 CancellationToken cancellationToken) =>
             {
                 var command = new RefreshTokenCommand(request.RefreshToken);
 
-                Result<UserLoginResponse> result = await handler.Handle(command, cancellationToken);
+                Result<AuthLoginResponse> result = await handler.Handle(command, cancellationToken);
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })

@@ -9,8 +9,15 @@ using Web.Api.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((context, loggerConfig) => loggerConfig.ReadFrom.Configuration(context.Configuration));
+// ---------------------------
+// Configure Logging
+// ---------------------------
+builder.Host.UseSerilog((context, loggerConfig) =>
+    loggerConfig.ReadFrom.Configuration(context.Configuration));
 
+// ---------------------------
+// Register Services
+// ---------------------------
 builder.Services.AddSwaggerGenWithAuth();
 
 builder.Services
@@ -18,40 +25,52 @@ builder.Services
     .AddPresentation()
     .AddInfrastructure(builder.Configuration);
 
+// Allow all origins for development
+builder.Services.AddCors(options => options.AddPolicy("DevCorsPolicy",
+        policy => policy.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod()));
+
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
+// ---------------------------
+// Build App
+// ---------------------------
 WebApplication app = builder.Build();
 
+// ---------------------------
+// Middleware Pipeline
+// ---------------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithUi();
-
     // await app.ApplyMigrations();
 }
 
-app.MapHealthChecks("health", new HealthCheckOptions
+// ⚠️ TODO: CORS must come before auth & controller handling
+app.UseCors("DevCorsPolicy");
+
+app.MapHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
 app.UseRequestContextLogging();
-
 app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapEndpoints();
 
-// REMARK: If you want to use Controllers, you'll need this.
+// For controller-based endpoints
 app.MapControllers();
 
 await app.RunAsync();
 
-// REMARK: Required for functional and integration tests to work.
+// Required for functional/integration tests
 namespace Web.Api
 {
     public partial class Program;

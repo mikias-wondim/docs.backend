@@ -7,9 +7,6 @@ public class UpdateProfileCommandValidator : AbstractValidator<UpdateProfileComm
 {
     public UpdateProfileCommandValidator()
     {
-        RuleFor(c => c.UserId)
-            .NotEmpty().WithMessage("User ID is required.");
-
         RuleFor(c => c.FirstName)
             .NotEmpty().WithMessage("First name is required.")
             .MaximumLength(UserConstraints.MaxFirstNameLength)

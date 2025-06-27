@@ -24,7 +24,7 @@ internal sealed class DeleteProjectCommandHandler(
         }
         catch (ApplicationException)
         {
-            return Result.Failure(UserErrors.Unauthorized());
+            return Result.Failure(UserErrors.Unauthorized);
         }
 
         Project? project = await context.Projects
@@ -45,7 +45,7 @@ internal sealed class DeleteProjectCommandHandler(
 
         if (project.OwnerId != userId)
         {
-            return Result.Failure(ProjectErrors.Unauthorized(command.ProjectId));
+            return Result.Failure<Guid>(UserErrors.Forbidden);
         }
 
         string deletedBy = $"{user.FirstName} {user.LastName} ({user.Id})";

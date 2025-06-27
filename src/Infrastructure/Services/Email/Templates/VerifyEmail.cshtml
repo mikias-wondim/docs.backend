@@ -6,40 +6,48 @@
     <meta charset="utf-8" />
     <title>Email Verification</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; color: #333;">
-    <div style="max-width: 640px; margin: 60px auto; background: linear-gradient(to bottom right, #ffffff, #f9fafc); border-radius: 16px; padding: 48px 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);">
-        
+<body style="margin: 0; padding: 0; background-color: #e5e7eb; font-family: 'Segoe UI', sans-serif; color: #1f2937;">
+
+    <div style="max-width: 600px; margin: 40px auto; border-radius: 12px; padding: 40px 32px; box-shadow: 0 8px 20px rgba(0,0,0,0.05);">
+
+        <!-- Header -->
         <div style="text-align: center; margin-bottom: 32px;">
-            <div style="font-size: 28px; font-weight: 700; color: #2c3e50; margin-bottom: 8px;">Welcome to ET Docs</div>
-            <div style="font-size: 16px; color: #6c757d;">Let's get you started with a quick verification</div>
+            <h1 style="font-size: 24px; font-weight: 700; color: #1e293b; margin: 0;">Welcome to ET Docs</h1>
+            <p style="font-size: 15px; color: #6b7280; margin-top: 8px;">Verify your email to activate your account</p>
         </div>
 
-        <div style="background-color: #ffffff; border-radius: 12px; padding: 32px 24px; border: 1px solid #e6eaf1;">
-            <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                Thanks for signing up! Please confirm your email address to activate your account. This ensures the security of your data and helps us serve you better.
+        <!-- Card Content -->
+        <div style="border: 1px solid #d1d5db; border-radius: 10px; padding: 24px 20px;">
+
+            <p style="font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+                Thank you for signing up! To complete your registration, please verify your email address by clicking the button below:
             </p>
 
+            <!-- Button -->
             <div style="text-align: center; margin: 30px 0;">
                 <a href="@Model.VerificationLink"
-                   style="display: inline-block; padding: 14px 28px; background: linear-gradient(90deg, #667eea, #764ba2); color: #fff; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
-                    ✅ Verify My Email
+                   style="display: inline-block; color: #ffffff; padding: 24px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+                    Verify My Email
                 </a>
             </div>
 
-            <p style="font-size: 14px; color: #777; margin-top: 30px;">
-                If the button doesn’t work, you can manually copy and paste the following link into your browser:
+            <!-- Fallback Link -->
+            <p style="font-size: 14px; color: #4b5563; margin-bottom: 6px;">
+                If the button doesn’t work, you can also copy and paste the link below into your browser:
             </p>
-            <p style="font-size: 14px; word-break: break-all; color: #4F46E5; background-color: #f1f5f9; padding: 10px; border-radius: 6px;">
-                <a href="@Model.VerificationLink" style="color: #4F46E5; text-decoration: none;">
+            <p style="font-size: 14px; word-break: break-word; padding: 10px; border-radius: 6px; color: #1d4ed8;">
+                <a href="@Model.VerificationLink" style="color: #1d4ed8; text-decoration: none;">
                     @Model.VerificationLink
                 </a>
             </p>
         </div>
 
-        <div style="text-align: center; font-size: 13px; color: #999; margin-top: 40px;">
-            <p>If you didn’t request this email, feel free to ignore it — no action will be taken.</p>
+        <!-- Footer -->
+        <div style="text-align: center; font-size: 13px; color: #6b7280; margin-top: 32px;">
+            <p>If you didn’t request this email, no action is needed and you can safely ignore it.</p>
             <p>© @Model.CurrentYear ET Docs. All rights reserved.</p>
         </div>
+
     </div>
 </body>
 </html>

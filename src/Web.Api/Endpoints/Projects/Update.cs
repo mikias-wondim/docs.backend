@@ -14,7 +14,7 @@ internal sealed class Update : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("projects/{projectId:guid}/update", async (
+        app.MapPut("projects/{projectId:guid}", async (
                 Guid projectId,
                 [FromBody] Request request,
                 ICommandHandler<UpdateProjectCommand, Guid> handler,

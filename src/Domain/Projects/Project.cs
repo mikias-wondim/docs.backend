@@ -12,7 +12,7 @@ public sealed class Project : Entity
     public ProjectVisibility Visibility { get; private set; }
     public string? OverviewMd { get; private set; }
 
-    public User User { get; set; }
+    public User Owner { get; set; }
     public List<ProjectMember> Members { get; set; }
     
     // Required by EF Core
@@ -54,6 +54,13 @@ public sealed class Project : Entity
     public void UpdateOverview(string overviewMd, string updatedBy, DateTime timestamp)
     {
         OverviewMd = overviewMd;
+        
+        UpdateAudit(timestamp, updatedBy);
+    }
+
+    public void TransferOwnership(Guid newOwnerId, string updatedBy, DateTime timestamp)
+    {
+        OwnerId = newOwnerId;
         
         UpdateAudit(timestamp, updatedBy);
     }

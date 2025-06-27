@@ -6,9 +6,6 @@ public class CreateProjectCommandValidator: AbstractValidator<CreateProjectComma
 {
     public CreateProjectCommandValidator()
     {
-        RuleFor(c => c.OwnerId)
-            .NotEmpty().WithMessage("Owner ID is required.");
-
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Project name is required.")
             .MaximumLength(100).WithMessage("Project name must not exceed 100 characters.");

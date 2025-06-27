@@ -1,5 +1,4 @@
 using Domain.Projects;
-using Domain.Users;
 using Infrastructure.Database.Configurations.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -24,7 +23,7 @@ internal sealed class ProjectConfiguration: EntityConfiguration<Project>
         builder.Property(p => p.Visibility)
             .IsRequired();
 
-        builder.HasOne<User>()
+        builder.HasOne(p => p.Owner)
             .WithMany(u => u.Projects)
             .HasForeignKey(p => p.OwnerId)
             .IsRequired()
@@ -34,6 +33,6 @@ internal sealed class ProjectConfiguration: EntityConfiguration<Project>
         builder.HasIndex(p => new { p.OwnerId, p.Name })
             .IsUnique();
         
-        builder.HasQueryFilter(r => r.User.RecordStatus != RecordStatus.Deleted);
+        builder.HasQueryFilter(r => r.Owner.RecordStatus != RecordStatus.Deleted);
     }
 }

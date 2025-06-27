@@ -13,9 +13,9 @@ internal sealed class GetOwnProjectsQueryHandler(
     IApplicationDbContext context,
     IUserContext userContext,
     IMapper mapper
-) : IQueryHandler<GetOwnProjectsQuery, List<ProjectResponse>>
+) : IQueryHandler<GetOwnProjectsQuery, PagedResult<ProjectResponse>>
 {
-    public async Task<Result<List<ProjectResponse>>> Handle(GetOwnProjectsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<ProjectResponse>>> Handle(GetOwnProjectsQuery query, CancellationToken cancellationToken)
     {
         Guid currentUserId;
         try
@@ -24,7 +24,7 @@ internal sealed class GetOwnProjectsQueryHandler(
         }
         catch (ApplicationException)
         {
-            return Result.Failure<List<ProjectResponse>>(UserErrors.Unauthorized());
+            return Result.Failure<PagedResult<ProjectResponse>>(UserErrors.Unauthorized);
         }
         
         IQueryable<Project> projectsQuery = context.Projects
@@ -54,16 +54,30 @@ internal sealed class GetOwnProjectsQueryHandler(
                 _ => projectsQuery.OrderByDescending(p => p.CreatedAt)
             };
 
+        // Total count before pagination
+        int totalCount = await projectsQuery.CountAsync(cancellationToken);
+
+        
         // Pagination
         int skip = (query.Page - 1) * query.PageSize;
         List<Project> pagedProjects = await projectsQuery
             .Skip(skip)
             .Take(query.PageSize)
+            .Include(p => p.Members)
+            .Include(p => p.Owner)
             .ToListAsync(cancellationToken);
 
         // Mapping
         List<ProjectResponse>? projectResponses = mapper.Map<List<ProjectResponse>>(pagedProjects);
 
-        return Result.Success(projectResponses);
+        var pagedResult = new PagedResult<ProjectResponse>
+        {
+            Items = projectResponses,
+            PageNumber = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
+
+        return Result.Success(pagedResult);
     }
 }

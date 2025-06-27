@@ -9,23 +9,24 @@ namespace Web.Api.Endpoints.Users;
 
 public class UpdateProfile : IEndpoint
 {
-    private sealed record Request(
-        string FirstName,
-        string LastName,
-        string? DisplayName,
-        IFormFile? Avatar,
-        string? Bio);
+    private sealed class Request
+    {
+        [FromForm] public string FirstName { get; init; } = null!;
+        [FromForm] public string LastName { get; init; } = null!;
+        [FromForm] public string? DisplayName { get; init; }
+        [FromForm] public IFormFile? Avatar { get; init; }
+        [FromForm] public string? Bio { get; init; }
+    }
+
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("users/{userId:guid}/update-profile", async (
-                [FromRoute] Guid userId,
+        app.MapPut("/users/me", async (
                 [FromForm] Request request,
                 ICommandHandler<UpdateProfileCommand, Guid> handler,
                 CancellationToken cancellationToken) =>
             {
                 var command = new UpdateProfileCommand(
-                    userId,
                     request.FirstName,
                     request.LastName,
                     request.DisplayName,
@@ -34,8 +35,9 @@ public class UpdateProfile : IEndpoint
 
                 Result<Guid> result = await handler.Handle(command, cancellationToken);
 
-                return result.Match(Results.Ok, CustomResults.Problem);
+                return result.Match(Results.NoContent, CustomResults.Problem);
             })
+            .Accepts<IFormFile>("multipart/form-data")
             .RequireAuthorization()
             .DisableAntiforgery()
             .WithTags(Tags.Users);

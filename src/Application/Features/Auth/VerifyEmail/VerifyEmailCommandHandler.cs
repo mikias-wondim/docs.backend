@@ -12,6 +12,7 @@ internal sealed class VerifyEmailCommandHandler(
     IDateTimeProvider dateTimeProvider
 ) : ICommandHandler<VerifyEmailCommand, bool>
 {
+    private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
     public async Task<Result<bool>> Handle(VerifyEmailCommand command, CancellationToken cancellationToken)
     {
         EmailVerificationToken verificationToken = await context.EmailVerificationTokens
@@ -22,15 +23,15 @@ internal sealed class VerifyEmailCommandHandler(
         {
             return Result.Failure<bool>(AuthErrors.InvalidEmailVerificationToken);
         }
-
-        if (verificationToken.ExpiresAtUtc < dateTimeProvider.UtcNow)
+        
+        if (verificationToken.ExpiresAtUtc < DateTimeProvider.UtcNow)
         {
             return Result.Failure<bool>(AuthErrors.ExpiredEmailVerificationToken);
         }
         
         User user = await context.Users.FirstAsync(u => u.Id == verificationToken.UserId, cancellationToken);
         
-        user.VerifyEmail(DateTime.UtcNow);
+        user.VerifyEmail(DateTimeProvider.GetNow);
         context.EmailVerificationTokens.Remove(verificationToken);
         await context.SaveChangesAsync(cancellationToken);
         

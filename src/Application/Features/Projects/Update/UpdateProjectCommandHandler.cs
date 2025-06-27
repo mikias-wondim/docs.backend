@@ -24,19 +24,11 @@ internal sealed class UpdateProjectCommandHandler(
         }
         catch (ApplicationException)
         {
-            return Result.Failure<Guid>(UserErrors.Unauthorized());       
+            return Result.Failure<Guid>(UserErrors.Unauthorized);       
         }
         
         Project? project = await context.Projects
             .SingleOrDefaultAsync(p => p.Id == command.ProjectId, cancellationToken);
-        
-        User? user = await context.Users.AsNoTracking()
-            .SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
-        
-        if (user is null)
-        {
-            return Result.Failure<Guid>(UserErrors.NotFound(userContext.UserId));
-        }
         
         if (project is null)
         {
@@ -45,7 +37,15 @@ internal sealed class UpdateProjectCommandHandler(
 
         if (project.OwnerId != userId)
         {
-            return Result.Failure<Guid>(ProjectErrors.Unauthorized(command.ProjectId));
+            return Result.Failure<Guid>(UserErrors.Forbidden);
+        }
+        
+        User? user = await context.Users.AsNoTracking()
+            .SingleOrDefaultAsync(u => u.Id == userContext.UserId, cancellationToken);
+        
+        if (user is null)
+        {
+            return Result.Failure<Guid>(UserErrors.NotFound(userContext.UserId));
         }
         
         string updatedBy = $"{user.FirstName} {user.LastName} ({user.Id})";

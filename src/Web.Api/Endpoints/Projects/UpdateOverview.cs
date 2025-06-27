@@ -13,7 +13,7 @@ internal sealed class UpdateOverview : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("projects/{projectId:guid}/overview", async (
+        app.MapPatch("projects/{projectId:guid}/overview", async (
                 Guid projectId,
                 [FromBody] Request request,
                 ICommandHandler<UpdateProjectOverviewCommand, Guid> handler,

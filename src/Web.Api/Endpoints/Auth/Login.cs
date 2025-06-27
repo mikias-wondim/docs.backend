@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Messaging;
+using Application.Features.Auth;
 using Application.Features.Auth.Login;
 using Application.Features.Users;
 using SharedKernel;
@@ -15,12 +16,12 @@ internal sealed class Login : IEndpoint
     {
         app.MapPost("auth/login", async (
             Request request,
-            ICommandHandler<LoginCommand, UserLoginResponse> handler,
+            ICommandHandler<LoginCommand, AuthLoginResponse> handler,
             CancellationToken cancellationToken) =>
         {
             var command = new LoginCommand(request.Email, request.Password);
 
-            Result<UserLoginResponse> result = await handler.Handle(command, cancellationToken);
+            Result<AuthLoginResponse> result = await handler.Handle(command, cancellationToken);
 
             return result.Match(Results.Ok, CustomResults.Problem);
         })

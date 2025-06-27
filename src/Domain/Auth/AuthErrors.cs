@@ -24,7 +24,7 @@ public static class AuthErrors
         "Auth.InvalidEmailVerificationToken",
         "The provided email verification token is invalid.");
     
-    public static readonly Error ExpiredEmailVerificationToken = Error.Validation(
+    public static readonly Error ExpiredEmailVerificationToken = Error.Conflict(
         "Auth.ExpiredEmailVerificationToken",
         "The provided email verification token has expired.");
 }

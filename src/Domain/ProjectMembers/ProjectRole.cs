@@ -5,5 +5,4 @@ public enum ProjectRole
     Read = 0,
     Write = 1,
     Admin = 2,
-    Owner = 3
 }

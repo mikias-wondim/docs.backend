@@ -15,26 +15,25 @@ public sealed class ProjectMember: Entity
     public User User { get; set; }
     
     // EF Core Constructor
-    private ProjectMember() { }
+    public ProjectMember() { }
     
-    public ProjectMember(Guid id, Guid projectId, Guid userId, ProjectRole role)
+    public ProjectMember(Guid id, Guid projectId, Guid userId, ProjectRole role,  string createdBy, DateTime createdAt)
         : base(id)
     {
         ProjectId = projectId;
         UserId = userId;
         Role = role;
+        
+        RegisterAudit(createdAt, createdBy);
     }
 
-    public void ChangeRole(ProjectRole newRole)
+    public void ChangeRole(ProjectRole newRole, string updatedBy, DateTime timestamp)
     {
-        if (Role == ProjectRole.Owner)
-        {
-            throw new InvalidOperationException("Owner role cannot be changed.");
-        }
-
         Role = newRole;
+        
+        UpdateAudit(timestamp, updatedBy);
     }
 
     public bool IsAdmin() => Role == ProjectRole.Admin;
-    public bool CanWrite() => Role is ProjectRole.Write or ProjectRole.Admin or ProjectRole.Owner;
+    public bool CanWrite() => Role is ProjectRole.Write or ProjectRole.Admin;
 }
