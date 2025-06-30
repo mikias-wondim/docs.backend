@@ -40,6 +40,7 @@ internal sealed class UpdateProjectMemberRoleCommandHandler(
 
         Project? project = await context.Projects
             .AsNoTracking()
+            .Include(p => p.Members)
             .FirstOrDefaultAsync(p => p.Id == command.ProjectId, cancellationToken);
 
         if (project is null)

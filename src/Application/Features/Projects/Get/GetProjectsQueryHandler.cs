@@ -32,7 +32,8 @@ internal sealed class GetProjectsQueryHandler(
         // Filter
         if (!string.IsNullOrWhiteSpace(query.Name))
         {
-            projectsQuery = projectsQuery.Where(p => p.Name.Contains(query.Name));
+            string pattern = $"%{query.Name}%";
+            projectsQuery = projectsQuery.Where(p => EF.Functions.Like(p.Name, pattern));
         }
 
         if (query.Visibility is not null)

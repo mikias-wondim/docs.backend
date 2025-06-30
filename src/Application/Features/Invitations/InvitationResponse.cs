@@ -21,7 +21,7 @@ public sealed class InvitationResponse: EntityResponse
     public InvitationStatus Status { get; set; }
 
     // Navigation properties
-    public ProjectResponse Project { get; set; }
+    public ProjectSummaryResponse Project { get; set; }
     public UserSummaryResponse InvitedUser { get; set; }
     public UserSummaryResponse InvitedByUser { get; set; }
 }

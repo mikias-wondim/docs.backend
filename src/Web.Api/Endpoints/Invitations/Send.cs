@@ -15,7 +15,7 @@ internal sealed class Send: IEndpoint
         ProjectRole Role);
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("projects/${projectId:guid}/invitation", async (
+        app.MapPost("projects/{projectId:guid}/invitation", async (
             [FromRoute]Guid projectId, 
             [FromBody]Request request,
             ICommandHandler<SendInvitationCommand, bool> handler,

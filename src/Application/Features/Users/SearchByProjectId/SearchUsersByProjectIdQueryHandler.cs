@@ -14,27 +14,29 @@ internal sealed class SearchUsersByProjectIdQueryHandler(
     public async Task<Result<List<UserSummaryResponse>>> Handle(SearchUsersByProjectIdQuery query,
         CancellationToken cancellationToken)
     {
-        IQueryable<User> usersQuery = context.Users.AsNoTracking()
-            .Where(u => u.Projects.All(p => p.Id != query.ProjectId) &&
-                        u.ProjectMembers.All(pm => pm.ProjectId != query.ProjectId));
-
-        string search = query.Query.ToLower(System.Globalization.CultureInfo.CurrentCulture);
-        if (search.Length < 3)
+        if (query.Query.Length < 3)
         {
             return Result.Success(new List<UserSummaryResponse>());
         }
 
+        IQueryable<User> usersQuery = context.Users.AsNoTracking()
+            .Where(u =>
+                u.Projects.All(p => p.Id != query.ProjectId) &&
+                u.ProjectMembers.All(pm => pm.ProjectId != query.ProjectId));
+
+        string pattern = $"%{query.Query}%";
+
         usersQuery = usersQuery.Where(u =>
-            u.DisplayName != null && u.DisplayName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
-            u.FirstName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
-            u.LastName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
-            u.Email.Contains(search, StringComparison.CurrentCultureIgnoreCase));
+            EF.Functions.Like(u.DisplayName!, pattern) ||
+            EF.Functions.Like(u.FirstName, pattern) ||
+            EF.Functions.Like(u.LastName, pattern) ||
+            EF.Functions.Like(u.Email, pattern));
 
-        List<User> users = await usersQuery
-            .ToListAsync(cancellationToken);
 
+        List<User> users = await usersQuery.ToListAsync(cancellationToken);
         List<UserSummaryResponse> result = mapper.Map<List<UserSummaryResponse>>(users);
 
         return Result.Success(result);
     }
+
 }

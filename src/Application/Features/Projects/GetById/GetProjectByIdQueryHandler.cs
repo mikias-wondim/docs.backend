@@ -2,6 +2,7 @@ using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using AutoMapper;
+using Domain.Invitations;
 using Domain.Projects;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -25,15 +26,18 @@ internal sealed class GetProjectByIdQueryHandler(
         {
             currentUserId = Guid.Empty;
         }
-        
+
         Project? project = await context.Projects
             .AsNoTracking()
             .Include(p => p.Members)
             .ThenInclude(pm => pm.User)
             .Include(p => p.Owner)
+            .Include(p => p.Invitations.Where(i => i.Status == InvitationStatus.Pending))
+            .ThenInclude(i => i.InvitedUser)
             .FirstOrDefaultAsync(
                 p => p.Id == query.ProjectId &&
-                     (p.Visibility == ProjectVisibility.Public || p.OwnerId == currentUserId), cancellationToken);
+                     (p.Visibility == ProjectVisibility.Public || p.OwnerId == currentUserId ||
+                      p.Members.Any(pm => pm.UserId == currentUserId)), cancellationToken);
 
         if (project is null)
         {

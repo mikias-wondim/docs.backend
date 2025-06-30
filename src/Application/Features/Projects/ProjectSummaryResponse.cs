@@ -1,8 +1,9 @@
 using Domain.Projects;
+using SharedKernel;
 
 namespace Application.Features.Projects;
 
-public sealed class ProjectSummaryResponse
+public sealed class ProjectSummaryResponse: EntityResponse
 {
     public Guid OwnerId { get; set; }
     public string Name { get; set; }
