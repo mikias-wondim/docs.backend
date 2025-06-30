@@ -1,20 +1,25 @@
 using Application.Abstractions.Services.Email;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
+using Infrastructure.Services.Email.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Services.Email;
 
-public class EmailVerificationService(
+public sealed class EmailVerificationService(
     IFluentEmail emailSender,
-    IEmailLinkGenerator linkGenerator) : IEmailVerificationService
+    IConfiguration configuration) : IEmailVerificationService
 {
-    public async Task SendVerificationEmailAsync(string token, string toEmail,
+    public async Task SendAsync(string token, string toEmail,
         CancellationToken cancellationToken = default)
     {
         const string subject = "Email Verification - ET Docs";
-        string verificationUrl = linkGenerator.GenerateVerificationLink(token);
+        string encodedToken = Uri.EscapeDataString(token);
+        string verificationUrl =
+            $"{configuration["FrontEnd:BaseUrl"]}{configuration["FrontEnd:VerifyEmail"]}?token={encodedToken}";
 
-        var model = new EmailVerificationTemplateModel { VerificationLink = verificationUrl };
+
+        var model = new EmailLinkTemplateModel { Link = verificationUrl };
 
         string templatePath = Path.Combine(AppContext.BaseDirectory,
             "Services",

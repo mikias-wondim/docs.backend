@@ -29,7 +29,7 @@ internal sealed class GetOwnProjectsQueryHandler(
         
         IQueryable<Project> projectsQuery = context.Projects
             .AsNoTracking()
-            .Where(p => p.OwnerId == currentUserId);
+            .Where(p => p.OwnerId == currentUserId || p.Members.Any(m => m.UserId == currentUserId));
         
         // Filter
         if (!string.IsNullOrWhiteSpace(query.Name))

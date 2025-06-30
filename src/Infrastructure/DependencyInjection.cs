@@ -2,13 +2,11 @@
 using System.Text;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
-using Application.Abstractions.Services;
 using Application.Abstractions.Services.Email;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
-using Infrastructure.Services;
 using Infrastructure.Services.Email;
 using Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -122,6 +120,7 @@ public static class DependencyInjection
 
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+        services.AddScoped<IEmailInvitationService, EmailInvitationService>();
         
         return services;
     }

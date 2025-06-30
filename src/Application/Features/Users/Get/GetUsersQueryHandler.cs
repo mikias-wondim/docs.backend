@@ -15,11 +15,12 @@ internal sealed class GetUsersQueryHandler(
     public async Task<Result<List<UserResponse>>> Handle(GetUsersQuery query, CancellationToken cancellationToken)
     {
         IQueryable<User> usersQuery = context.Users.AsNoTracking();
-        
+
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
             string search = query.Search.ToLower(System.Globalization.CultureInfo.CurrentCulture);
             usersQuery = usersQuery.Where(u =>
+                u.DisplayName != null && u.DisplayName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
                 u.FirstName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
                 u.LastName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
                 u.Email.Contains(search, StringComparison.CurrentCultureIgnoreCase));

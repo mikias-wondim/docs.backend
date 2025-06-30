@@ -1,4 +1,5 @@
 ﻿using Domain.Auth;
+using Domain.Invitations;
 using Domain.ProjectMembers;
 using Domain.Projects;
 using Domain.Todos;
@@ -15,6 +16,7 @@ public interface IApplicationDbContext
     DbSet<TodoItem> TodoItems { get; }
     DbSet<Project> Projects { get; }
     DbSet<ProjectMember> ProjectMembers { get; }
+    DbSet<Invitation> Invitations { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

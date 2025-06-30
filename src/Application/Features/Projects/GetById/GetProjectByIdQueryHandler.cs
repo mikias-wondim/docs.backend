@@ -29,6 +29,7 @@ internal sealed class GetProjectByIdQueryHandler(
         Project? project = await context.Projects
             .AsNoTracking()
             .Include(p => p.Members)
+            .ThenInclude(pm => pm.User)
             .Include(p => p.Owner)
             .FirstOrDefaultAsync(
                 p => p.Id == query.ProjectId &&

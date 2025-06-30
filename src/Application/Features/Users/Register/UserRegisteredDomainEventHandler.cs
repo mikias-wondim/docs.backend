@@ -38,7 +38,7 @@ public sealed class UserRegisteredDomainEventHandler(
             context.EmailVerificationTokens.Add(emailVerification);
             await context.SaveChangesAsync(cancellationToken);
             
-            await emailVerificationService.SendVerificationEmailAsync(
+            await emailVerificationService.SendAsync(
                 emailVerification.Token,
                 user.Email,
                 cancellationToken

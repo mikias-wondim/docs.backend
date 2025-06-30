@@ -1,3 +1,4 @@
+using Domain.Invitations;
 using Domain.ProjectMembers;
 using Domain.Users;
 using SharedKernel;
@@ -14,6 +15,7 @@ public sealed class Project : Entity
 
     public User Owner { get; set; }
     public List<ProjectMember> Members { get; set; }
+    public List<Invitation> Invitations { get; set; }
     
     // Required by EF Core
     public Project()

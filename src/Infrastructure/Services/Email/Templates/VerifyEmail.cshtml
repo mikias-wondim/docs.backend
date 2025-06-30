@@ -1,4 +1,4 @@
-@model Infrastructure.Services.Email.EmailVerificationTemplateModel
+@model Infrastructure.Services.Email.Models.EmailLinkTemplateModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,8 +25,8 @@
 
             <!-- Button -->
             <div style="text-align: center; margin: 30px 0;">
-                <a href="@Model.VerificationLink"
-                   style="display: inline-block; color: #ffffff; padding: 24px; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 6px;">
+                <a href="@Model.Link"
+                   style="display: inline-block; background-color: #2563eb; color: #ffffff; padding: 14px 28px; font-size: 16px; font-weight: 600; border-radius: 6px; text-decoration: none;">
                     Verify My Email
                 </a>
             </div>
@@ -36,8 +36,8 @@
                 If the button doesn’t work, you can also copy and paste the link below into your browser:
             </p>
             <p style="font-size: 14px; word-break: break-word; padding: 10px; border-radius: 6px; color: #1d4ed8;">
-                <a href="@Model.VerificationLink" style="color: #1d4ed8; text-decoration: none;">
-                    @Model.VerificationLink
+                <a href="@Model.Link" style="color: #1d4ed8; text-decoration: none;">
+                    @Model.Link
                 </a>
             </p>
         </div>

@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Domain.Auth;
+using Domain.Invitations;
 using Domain.ProjectMembers;
 using Domain.Projects;
 using Domain.Todos;
@@ -21,6 +22,7 @@ public sealed class ApplicationDbContext(
     public DbSet<TodoItem> TodoItems { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
+    public DbSet<Invitation> Invitations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

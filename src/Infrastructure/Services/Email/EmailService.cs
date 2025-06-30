@@ -5,7 +5,7 @@ using FluentEmail.Core.Models;
 
 namespace Infrastructure.Services.Email;
 
-public class EmailService(IFluentEmail fluentEmail): IEmailService
+public sealed class EmailService(IFluentEmail fluentEmail): IEmailService
 {
     public async Task SendAsync(string to, string subject, string body, bool isHtml = true,
         CancellationToken cancellationToken = default)

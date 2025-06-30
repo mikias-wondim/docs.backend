@@ -20,6 +20,9 @@
     <Content Include="Services\Email\Templates\VerifyEmail.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Services\Email\Templates\InvitationEmail.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
 	<InternalsVisibleTo Include="ArchitectureTests" />

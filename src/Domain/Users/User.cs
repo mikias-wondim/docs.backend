@@ -1,4 +1,5 @@
-﻿using Domain.ProjectMembers;
+﻿using Domain.Invitations;
+using Domain.ProjectMembers;
 using Domain.Projects;
 using SharedKernel;
 
@@ -22,6 +23,7 @@ public sealed class User : Entity
     // === Navigation Properties ===
     public List<Project> Projects { get; private set; } = [];
     public List<ProjectMember> ProjectMembers { get; private set; } = [];
+    public List<Invitation> Invitations { get; private set; } = [];
 
     // Required by EF Core
     public User()

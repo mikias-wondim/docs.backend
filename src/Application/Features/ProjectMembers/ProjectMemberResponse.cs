@@ -11,6 +11,6 @@ public sealed class ProjectMemberResponse: EntityResponse
     public Guid UserId { get; init; }
     public ProjectRole Role { get; init; }
     
-    public ProjectResponse Project { get; set; }
+    public ProjectSummaryResponse Project { get; set; }
     public UserSummaryResponse User { get; set; }
 }
