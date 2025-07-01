@@ -10,25 +10,22 @@ namespace Application.Features.Users.Get;
 internal sealed class GetUsersQueryHandler(
     IApplicationDbContext context,
     IMapper mapper
-) : IQueryHandler<GetUsersQuery, List<UserResponse>>
+) : IQueryHandler<GetUsersQuery, PagedResult<UserSummaryResponse>>
 {
-    public async Task<Result<List<UserResponse>>> Handle(GetUsersQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<UserSummaryResponse>>> Handle(GetUsersQuery query,
+        CancellationToken cancellationToken)
     {
         IQueryable<User> usersQuery = context.Users.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
-            string search = query.Search.ToLower(System.Globalization.CultureInfo.CurrentCulture);
-            usersQuery = usersQuery.Where(u =>
-                u.DisplayName != null && u.DisplayName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
-                u.FirstName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
-                u.LastName.Contains(search, StringComparison.CurrentCultureIgnoreCase) ||
-                u.Email.Contains(search, StringComparison.CurrentCultureIgnoreCase));
-        }
+            string pattern = $"%{query.Search.Trim()}%";
 
-        if (query.EmailVerified.HasValue)
-        {
-            usersQuery = usersQuery.Where(u => u.EmailVerified == query.EmailVerified);
+            usersQuery = usersQuery.Where(u =>
+                u.DisplayName != null && EF.Functions.Like(u.DisplayName, pattern) ||
+                EF.Functions.Like(u.FirstName, pattern) ||
+                EF.Functions.Like(u.LastName, pattern) ||
+                EF.Functions.Like(u.Email, pattern));
         }
 
         // Sorting
@@ -45,6 +42,9 @@ internal sealed class GetUsersQueryHandler(
                 _ => usersQuery.OrderByDescending(u => u.CreatedAt)
             };
 
+        // Total count before pagination
+        int totalCount = await usersQuery.CountAsync(cancellationToken);
+
         int skip = (query.Page - 1) * query.PageSize;
 
         List<User> users = await usersQuery
@@ -52,8 +52,16 @@ internal sealed class GetUsersQueryHandler(
             .Take(query.PageSize)
             .ToListAsync(cancellationToken);
 
-        List<UserResponse> result = mapper.Map<List<UserResponse>>(users);
+        List<UserSummaryResponse> userResponses = mapper.Map<List<UserSummaryResponse>>(users);
 
-        return Result.Success(result);
+        var pagedResult = new PagedResult<UserSummaryResponse>
+        {
+            Items = userResponses,
+            PageNumber = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount
+        };
+
+        return Result.Success(pagedResult);
     }
 }

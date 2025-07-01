@@ -15,7 +15,8 @@ internal sealed class GetOwnProjectsQueryHandler(
     IMapper mapper
 ) : IQueryHandler<GetOwnProjectsQuery, PagedResult<ProjectResponse>>
 {
-    public async Task<Result<PagedResult<ProjectResponse>>> Handle(GetOwnProjectsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<ProjectResponse>>> Handle(GetOwnProjectsQuery query,
+        CancellationToken cancellationToken)
     {
         Guid currentUserId;
         try
@@ -26,11 +27,12 @@ internal sealed class GetOwnProjectsQueryHandler(
         {
             return Result.Failure<PagedResult<ProjectResponse>>(UserErrors.Unauthorized);
         }
-        
+
         IQueryable<Project> projectsQuery = context.Projects
             .AsNoTracking()
-            .Where(p => p.OwnerId == currentUserId || p.Members.Any(m => m.UserId == currentUserId));
-        
+            .Where(p => p.RecordStatus != RecordStatus.Deleted &&
+                        (p.OwnerId == currentUserId || p.Members.Any(m => m.UserId == currentUserId)));
+
         // Filter
         if (!string.IsNullOrWhiteSpace(query.Name))
         {
@@ -57,7 +59,6 @@ internal sealed class GetOwnProjectsQueryHandler(
 
         // Total count before pagination
         int totalCount = await projectsQuery.CountAsync(cancellationToken);
-
         
         // Pagination
         int skip = (query.Page - 1) * query.PageSize;
@@ -67,6 +68,12 @@ internal sealed class GetOwnProjectsQueryHandler(
             .Include(p => p.Members)
             .Include(p => p.Owner)
             .ToListAsync(cancellationToken);
+
+        // Filter soft-deleted members manually after loading
+        foreach (Project project in pagedProjects)
+        {
+            project.Members = [.. project.Members.Where(m => m.RecordStatus != RecordStatus.Deleted)];
+        }
 
         // Mapping
         List<ProjectResponse>? projectResponses = mapper.Map<List<ProjectResponse>>(pagedProjects);

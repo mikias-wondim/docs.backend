@@ -7,7 +7,7 @@ internal sealed class GetUsersQueryValidator : AbstractValidator<GetUsersQuery>
     public GetUsersQueryValidator()
     {
         RuleFor(q => q.Page).GreaterThan(0);
-        RuleFor(q => q.PageSize).InclusiveBetween(1, 100);
+        RuleFor(q => q.PageSize).InclusiveBetween(1, 1000);
 
         RuleFor(q => q.SortBy)
             .Must(BeAValidSortByField)

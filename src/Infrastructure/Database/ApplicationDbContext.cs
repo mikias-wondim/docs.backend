@@ -3,7 +3,7 @@ using Domain.Auth;
 using Domain.Invitations;
 using Domain.ProjectMembers;
 using Domain.Projects;
-using Domain.Todos;
+using Domain.Sections;
 using Domain.Users;
 using Infrastructure.DomainEvents;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +19,11 @@ public sealed class ApplicationDbContext(
     public DbSet<User> Users { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
-    public DbSet<TodoItem> TodoItems { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectMember> ProjectMembers { get; set; }
     public DbSet<Invitation> Invitations { get; set; }
+    public DbSet<Section> Sections { get; set; }
+    public DbSet<SectionUserAccess> SectionUserAccesses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

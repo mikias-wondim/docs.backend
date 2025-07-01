@@ -17,9 +17,6 @@ internal sealed class UpdateProjectMemberRoleCommandValidator: AbstractValidator
             .WithMessage("User ID is required.");
         
         RuleFor(p => p.NewRole)
-            .NotEmpty()
-            .NotNull()
-            .WithMessage("New role is required.")
             .IsInEnum()
             .WithMessage("Invalid role.");       
     }

@@ -35,5 +35,6 @@ internal sealed class ProjectMemberConfiguration: EntityConfiguration<ProjectMem
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasQueryFilter(r => r.User.RecordStatus != RecordStatus.Deleted);
+        builder.HasQueryFilter(r => r.Project.RecordStatus != RecordStatus.Deleted);
     }
 }

@@ -34,11 +34,14 @@ internal sealed class GetProjectByIdQueryHandler(
             .Include(p => p.Owner)
             .Include(p => p.Invitations.Where(i => i.Status == InvitationStatus.Pending))
             .ThenInclude(i => i.InvitedUser)
+            .Include(p => p.Sections)
             .FirstOrDefaultAsync(
                 p => p.Id == query.ProjectId &&
-                     (p.Visibility == ProjectVisibility.Public || p.OwnerId == currentUserId ||
-                      p.Members.Any(pm => pm.UserId == currentUserId)), cancellationToken);
-
+                     (p.Visibility == ProjectVisibility.Public || 
+                      p.OwnerId == currentUserId || 
+                      p.Members.Any(pm => pm.UserId == currentUserId)),
+                cancellationToken);
+        
         if (project is null)
         {
             return Result.Failure<ProjectResponse>(ProjectErrors.NotFound(query.ProjectId));

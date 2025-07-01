@@ -47,10 +47,15 @@ public static class DependencyInjection
         string? connectionString = configuration.GetConnectionString("Database");
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString, sqlOptions =>
-                sqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default))
+            options
+                .UseSqlServer(connectionString,
+                    sqlOptions =>
+                    {
+                        sqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Default);
+                        sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    })
         );
-        
+
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         return services;
@@ -102,7 +107,7 @@ public static class DependencyInjection
 
         return services;
     }
-    
+
     private static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration)
     {
         services
@@ -121,7 +126,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailVerificationService, EmailVerificationService>();
         services.AddScoped<IEmailInvitationService, EmailInvitationService>();
-        
+
         return services;
     }
 }

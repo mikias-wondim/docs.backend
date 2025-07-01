@@ -1,5 +1,6 @@
 using Application.Features.Invitations;
 using Application.Features.ProjectMembers;
+using Application.Features.Sections;
 using Application.Features.Users;
 using Domain.Projects;
 using SharedKernel;
@@ -17,4 +18,5 @@ public sealed class ProjectResponse: EntityResponse
     public UserSummaryResponse Owner { get; set; }
     public List<ProjectMemberResponse> Members { get; set; }
     public List<InvitationResponse> Invitations { get; set; }
+    public List<SectionResponse> Sections { get; set; }
 }

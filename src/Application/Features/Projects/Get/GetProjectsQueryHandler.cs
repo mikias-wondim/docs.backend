@@ -65,6 +65,12 @@ internal sealed class GetProjectsQueryHandler(
             .Include(p => p.Owner)
             .ToListAsync(cancellationToken);
 
+        // Filter soft-deleted members manually after loading
+        foreach (Project project in pagedProjects)
+        {
+            project.Members = [.. project.Members.Where(m => m.RecordStatus != RecordStatus.Deleted)];
+        }
+        
         // Mapping
         List<ProjectResponse>? projectResponses = mapper.Map<List<ProjectResponse>>(pagedProjects);
         

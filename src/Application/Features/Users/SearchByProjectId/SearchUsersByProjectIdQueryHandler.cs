@@ -19,11 +19,19 @@ internal sealed class SearchUsersByProjectIdQueryHandler(
             return Result.Success(new List<UserSummaryResponse>());
         }
 
-        IQueryable<User> usersQuery = context.Users.AsNoTracking()
-            .Where(u =>
-                u.Projects.All(p => p.Id != query.ProjectId) &&
-                u.ProjectMembers.All(pm => pm.ProjectId != query.ProjectId));
+        Guid ownerId = await context.Projects
+            .Where(p => p.Id == query.ProjectId)
+            .Select(p => p.OwnerId)
+            .FirstOrDefaultAsync(cancellationToken);
 
+        IQueryable<User> usersQuery = context.Users
+            .AsNoTracking()
+            .Where(u =>
+                    u.Id != ownerId &&
+                    !u.ProjectMembers.Any(pm =>
+                        pm.ProjectId == query.ProjectId &&
+                        pm.RecordStatus == RecordStatus.Active)
+            );
         string pattern = $"%{query.Query}%";
 
         usersQuery = usersQuery.Where(u =>
@@ -38,5 +46,4 @@ internal sealed class SearchUsersByProjectIdQueryHandler(
 
         return Result.Success(result);
     }
-
 }
