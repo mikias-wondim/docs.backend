@@ -36,8 +36,11 @@ internal sealed class GetSectionByIdQueryHandler(
         }
         
         Section? section = await context.Sections
+            .AsNoTracking()
             .Include(s => s.Project)
             .ThenInclude(p => p.Members)
+            .Include(s => s.AllowedUsers)
+            .ThenInclude(u => u.User)
             .FirstOrDefaultAsync(s => s.Id == query.SectionId, cancellationToken);
 
         if (section is null)
@@ -55,8 +58,11 @@ internal sealed class GetSectionByIdQueryHandler(
             userRole,
             query.Password
         );
-
-        if (!isAccessible)
+        
+        bool isOwner = section.Project.OwnerId == currentUserId;
+        bool canWrite = section.Project.Members.Any(m => m.UserId == currentUserId && m.CanWrite());
+        
+        if (!isAccessible && !isOwner && !canWrite)
         {
             return Result.Failure<SectionResponse>(UserErrors.Forbidden);
         }

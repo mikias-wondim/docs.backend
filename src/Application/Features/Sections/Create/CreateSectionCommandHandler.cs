@@ -28,6 +28,14 @@ internal sealed class CreateSectionCommandHandler(
         {
             return Result.Failure<Guid>(UserErrors.Unauthorized);
         }
+        
+        User? user = await context.Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
+
+        if (user is null)
+        {
+            return Result.Failure<Guid>(UserErrors.NotFound(currentUserId));       
+        }
 
         Project? project = await context.Projects
             .Include(p => p.Members)
@@ -57,6 +65,8 @@ internal sealed class CreateSectionCommandHandler(
                 return Result.Failure<Guid>(SectionErrors.AllowedUsersNotFound);
             }
         }
+        
+        string createBy = $"{user.FirstName} {user.LastName} ({user.Id})";
 
         var section = new Section(
             id: Guid.NewGuid(),
@@ -66,7 +76,7 @@ internal sealed class CreateSectionCommandHandler(
             visibility: command.Visibility,
             order: command.Order,
             createdAt: DateTimeProvider.GetNow,
-            createdBy: currentUserId.ToString(),
+            createdBy: createBy,
             password: command.Password,
             allowedRoles: command.AllowedRoles,
             allowedUserIds: command.AllowedUserIds

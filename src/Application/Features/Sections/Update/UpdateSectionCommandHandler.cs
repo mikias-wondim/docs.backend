@@ -26,10 +26,20 @@ internal sealed class UpdateSectionCommandHandler(
             return Result.Failure<Guid>(UserErrors.Unauthorized);
         }
         
+        User? user = await context.Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
+
+        if (user is null)
+        {
+            return Result.Failure<Guid>(UserErrors.NotFound(currentUserId));       
+        }
+        
         Section? section = await context.Sections
+            .Include(s => s.AllowedUsers) 
             .Include(s => s.Project)
             .ThenInclude(p => p.Members)
             .FirstOrDefaultAsync(s => s.Id == command.SectionId, cancellationToken);
+
 
         if (section is null)
         {
@@ -46,18 +56,6 @@ internal sealed class UpdateSectionCommandHandler(
         
         if (command.AllowedUserIds is not null && command.AllowedUserIds.Count > 0)
         {
-            int users = await context.Users
-                .Where(u => command.AllowedUserIds.Contains(u.Id))
-                .CountAsync(cancellationToken);
-
-            if (users != command.AllowedUserIds.Count)
-            {
-                return Result.Failure<Guid>(SectionErrors.AllowedUsersNotFound);
-            }
-        }
-        
-        if (command.AllowedUserIds is not null && command.AllowedUserIds.Count > 0)
-        {
             int found = await context.Users
                 .Where(u => command.AllowedUserIds.Contains(u.Id))
                 .CountAsync(cancellationToken);
@@ -68,7 +66,8 @@ internal sealed class UpdateSectionCommandHandler(
             }
         }
 
-        // Perform the update
+        string updatedBy = $"{user.FirstName} {user.LastName} ({user.Id})";
+        
         section.Update(
             command.Name,
             command.Description,
@@ -76,7 +75,7 @@ internal sealed class UpdateSectionCommandHandler(
             command.Password,
             command.AllowedRoles,
             command.AllowedUserIds ?? [],
-            currentUserId.ToString(),
+            updatedBy,
             DateTimeProvider.UtcNow
         );
 
