@@ -1,6 +1,7 @@
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Domain.Pages;
 using Domain.Sections;
 using Domain.Projects;
 using Domain.Users;
@@ -67,7 +68,7 @@ internal sealed class CreateSectionCommandHandler(
         }
         
         string createBy = $"{user.FirstName} {user.LastName} ({user.Id})";
-
+ 
         var section = new Section(
             id: Guid.NewGuid(),
             projectId: project.Id,
@@ -81,10 +82,26 @@ internal sealed class CreateSectionCommandHandler(
             allowedRoles: command.AllowedRoles,
             allowedUserIds: command.AllowedUserIds
         );
-        
+
         context.Sections.Add(section);
+
+        var defaultPage = new Page(
+            id: Guid.NewGuid(),
+            sectionId: section.Id,
+            title: "New Page",
+            order: 0,
+            createdBy: createBy,
+            createdAt: DateTimeProvider.GetNow
+        );
+
+        context.Pages.Add(defaultPage);
+
         await context.SaveChangesAsync(cancellationToken);
 
+        section.SetDefaultPage(defaultPage.Id);
+        context.Sections.Update(section);
+
+        await context.SaveChangesAsync(cancellationToken);
         return Result.Success(section.Id);
     }
 }

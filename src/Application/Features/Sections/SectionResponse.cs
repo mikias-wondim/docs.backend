@@ -9,6 +9,8 @@ namespace Application.Features.Sections;
 public sealed class SectionResponse: EntityResponse
 {
     public Guid ProjectId { get; init; }
+    public Guid DefaultPageId { get; set; }
+    
     public string Name { get; init; }
     public string? Description { get; init; }
     public int Order { get; init; }
@@ -19,7 +21,7 @@ public sealed class SectionResponse: EntityResponse
     public List<SectionUserAccessResponse> AllowedUsers { get; init; } = [];
     
     public ProjectSummaryResponse Project { get; init; }
-    public List<PageResponse> Pages { get; set; } = [];
+    public List<PageResponse> Pages { get; set; } = []; 
 }
 
 

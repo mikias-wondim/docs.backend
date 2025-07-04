@@ -1,3 +1,4 @@
+using Application.Features.Faqs;
 using Application.Features.Invitations;
 using Application.Features.Pages;
 using Application.Features.ProjectMembers;
@@ -5,6 +6,7 @@ using Application.Features.Projects;
 using Application.Features.Sections;
 using Application.Features.Users;
 using AutoMapper;
+using Domain.Faqs;
 using Domain.Invitations;
 using Domain.Pages;
 using Domain.ProjectMembers;
@@ -31,5 +33,6 @@ public class ProfileMap : Profile
         CreateMap<SectionUserAccess, SectionUserAccessResponse>();
         CreateMap<Page, PageResponse>();
         CreateMap<Page, PageSummaryResponse>();
+        CreateMap<Faq, FaqResponse>();
     }
 }

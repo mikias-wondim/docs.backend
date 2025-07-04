@@ -9,6 +9,7 @@ namespace Domain.Sections;
 public sealed class Section : Entity
 {
     public Guid ProjectId { get; private set; }
+    public Guid DefaultPageId { get; private set; }
     public string Name { get; private set; }
     public string? Description { get; private set; }
     public int Order { get; private set; }
@@ -98,8 +99,12 @@ public sealed class Section : Entity
 
         UpdateAudit(timestamp, updatedBy);
     }
-
-
+    
+    public void SetDefaultPage(Guid pageId)
+    {
+        DefaultPageId = pageId;
+    }
+    
     public bool IsAccessibleTo(User user, ProjectRole? role, string? passwordHash = null)
     {
         return Visibility switch

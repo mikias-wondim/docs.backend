@@ -1,3 +1,4 @@
+using Domain.Faqs;
 using Domain.Sections;
 using SharedKernel;
 
@@ -19,6 +20,7 @@ public sealed class Page : Entity
     
     public Section Section { get; init; }
     public Page? ParentPage { get; init; }
+    public List<Faq> Faqs { get; set; }
     
     public Page() { } // EF Core
 
@@ -72,7 +74,6 @@ public sealed class Page : Entity
     public void SetOrder(decimal newOrder, string updatedBy, DateTime timestamp)
     {
         Order = newOrder;
-        UpdateAudit(timestamp, updatedBy);
     }
 
     public void SetParent(Guid? parentPageId, string updatedBy, DateTime timestamp)

@@ -22,7 +22,7 @@ internal sealed class Delete: IEndpoint
                 Result result = await handler.Handle(command, cancellationToken);
 
                 return result.Match(Results.NoContent, CustomResults.Problem);
-            }).WithTags(Tags.Sections)
+            }).WithTags(Tags.Pages)
             .RequireAuthorization();
     }
 }

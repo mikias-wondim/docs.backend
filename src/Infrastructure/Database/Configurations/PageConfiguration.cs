@@ -46,7 +46,7 @@ public sealed class PageConfiguration : EntityConfiguration<Page>
             .WithMany()
             .HasForeignKey(p => p.ParentPageId)
             .OnDelete(DeleteBehavior.Restrict);
-
+        
         builder.HasQueryFilter(r => r.Section.RecordStatus != RecordStatus.Deleted);
     }
 }

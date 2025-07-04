@@ -19,4 +19,7 @@ public sealed class ProjectResponse: EntityResponse
     public List<ProjectMemberResponse> Members { get; set; }
     public List<InvitationResponse> Invitations { get; set; }
     public List<SectionResponse> Sections { get; set; }
+
+    public int? SectionCount { get; set; }
+    public int? PageCount { get; set; }
 }

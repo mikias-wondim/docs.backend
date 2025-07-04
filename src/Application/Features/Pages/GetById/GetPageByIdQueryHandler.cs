@@ -24,6 +24,8 @@ internal sealed class GetPageByIdQueryHandler(
             .Include(p => p.Section)
                 .ThenInclude(s => s.Project)
                     .ThenInclude(p => p.Members)
+            .Include(p => p.Section)
+            .ThenInclude(s => s.Pages)
             .Include(p => p.Section.AllowedUsers)
             .FirstOrDefaultAsync(p => p.Id == query.PageId, cancellationToken);
 
@@ -66,6 +68,10 @@ internal sealed class GetPageByIdQueryHandler(
                 _ => false
             };
 
+            bool isOwner = section.Project.OwnerId == currentUserId;
+            bool canWrite = section.Project.Members.Any(m => m.UserId == currentUserId && m.CanWrite());
+            hasAccess |= isOwner || canWrite;
+            
             return !hasAccess ? Result.Failure<PageResponse>(PageErrors.Forbidden) : Result.Success(mapper.Map<PageResponse>(page));
         }
         

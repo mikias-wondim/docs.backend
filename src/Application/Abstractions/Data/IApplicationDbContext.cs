@@ -1,4 +1,5 @@
 ﻿using Domain.Auth;
+using Domain.Faqs;
 using Domain.Invitations;
 using Domain.Pages;
 using Domain.ProjectMembers;
@@ -20,6 +21,7 @@ public interface IApplicationDbContext
     DbSet<Section> Sections { get; }
     DbSet<SectionUserAccess> SectionUserAccesses { get; }
     DbSet<Page> Pages { get; }
+    DbSet<Faq> Faqs { get; }
 
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

@@ -74,7 +74,7 @@ internal sealed class MovePageCommandHandler(
         {
             for (int i = 0; i < siblingPages.Count; i++)
             {
-                siblingPages[i].SetOrder(i + 1, GetAuditName(user), dateTimeProvider.UtcNow);
+                siblingPages[i].SetOrder(i + 1, siblingPages[i].UpdatedBy, siblingPages[i].UpdatedAt);
             }
         }
 

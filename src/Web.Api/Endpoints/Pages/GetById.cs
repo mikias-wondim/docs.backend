@@ -24,7 +24,6 @@ internal sealed class GetById : IEndpoint
                 Result<PageResponse> result = await handler.Handle(query, cancellationToken);
 
                 return result.Match(Results.Ok, CustomResults.Problem);
-            }).WithTags(Tags.Pages)
-            .RequireAuthorization();
+            }).WithTags(Tags.Pages);
     }
 }

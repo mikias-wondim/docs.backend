@@ -84,4 +84,6 @@ public sealed class User : Entity
     {
         LastLoginAt = loginTime;
     }
+    
+    public string FullName => $"{FirstName} {LastName}";
 }

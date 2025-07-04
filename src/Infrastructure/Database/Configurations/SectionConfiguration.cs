@@ -41,7 +41,6 @@ internal sealed class SectionConfiguration : EntityConfiguration<Section>
                 c => c.ToList()
             ));
 
-
         builder.Property(s => s.Order)
             .IsRequired();
 

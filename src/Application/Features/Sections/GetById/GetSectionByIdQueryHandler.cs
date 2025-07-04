@@ -19,6 +19,26 @@ internal sealed class GetSectionByIdQueryHandler(
 {
     public async Task<Result<SectionResponse>> Handle(GetSectionByIdQuery query, CancellationToken cancellationToken)
     {
+        Section? section = await context.Sections
+            .Include(s => s.Pages)
+            .Include(s => s.Project)
+            .ThenInclude(p => p.Members)
+            .Include(s => s.AllowedUsers)
+            .ThenInclude(u => u.User)
+            .FirstOrDefaultAsync(s => s.Id == query.SectionId, cancellationToken);
+        
+        if (section is null)
+        {
+            return Result.Failure<SectionResponse>(SectionErrors.NotFound(query.SectionId));
+        }
+
+        if (section.Visibility == SectionVisibility.Public)
+        {
+            
+            SectionResponse publicResponse = mapper.Map<SectionResponse>(section);
+            publicResponse.Pages = BuildPageTree(section.Pages, null, mapper);
+            return Result.Success(publicResponse);
+        }
         Guid currentUserId;
         try
         {
@@ -35,19 +55,6 @@ internal sealed class GetSectionByIdQueryHandler(
         if (user is null)
         {
             return Result.Failure<SectionResponse>(UserErrors.NotFound(currentUserId));
-        }
-
-        Section? section = await context.Sections
-            .Include(s => s.Pages)
-            .Include(s => s.Project)
-            .ThenInclude(p => p.Members)
-            .Include(s => s.AllowedUsers)
-            .ThenInclude(u => u.User)
-            .FirstOrDefaultAsync(s => s.Id == query.SectionId, cancellationToken);
-
-        if (section is null)
-        {
-            return Result.Failure<SectionResponse>(SectionErrors.NotFound(query.SectionId));
         }
 
         ProjectRole? userRole = section.Project.OwnerId == currentUserId

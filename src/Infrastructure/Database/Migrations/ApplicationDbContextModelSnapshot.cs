@@ -80,6 +80,69 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("RefreshTokens", "dbo");
                 });
 
+            modelBuilder.Entity("Domain.Faqs.Faq", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Order")
+                        .HasPrecision(16, 6)
+                        .HasColumnType("decimal(16,6)");
+
+                    b.Property<Guid>("PageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("RecordStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PageId");
+
+                    b.ToTable("Faqs", "dbo");
+                });
+
             modelBuilder.Entity("Domain.Invitations.Invitation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -374,6 +437,9 @@ namespace Infrastructure.Database.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid>("DefaultPageId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -592,6 +658,17 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Faqs.Faq", b =>
+                {
+                    b.HasOne("Domain.Pages.Page", "Page")
+                        .WithMany("Faqs")
+                        .HasForeignKey("PageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Page");
+                });
+
             modelBuilder.Entity("Domain.Invitations.Invitation", b =>
                 {
                     b.HasOne("Domain.Users.User", "InvitedByUser")
@@ -695,6 +772,11 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("Section");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Pages.Page", b =>
+                {
+                    b.Navigation("Faqs");
                 });
 
             modelBuilder.Entity("Domain.Projects.Project", b =>

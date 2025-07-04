@@ -74,10 +74,30 @@ internal sealed class GetOwnProjectsQueryHandler(
         {
             project.Members = [.. project.Members.Where(m => m.RecordStatus != RecordStatus.Deleted)];
         }
+        
+        var projectIds = pagedProjects.Select(p => p.Id).ToList();
 
+        Dictionary<Guid, int> sectionCounts = await context.Sections
+            .Where(s => projectIds.Contains(s.ProjectId) && s.RecordStatus != RecordStatus.Deleted)
+            .GroupBy(s => s.ProjectId)
+            .Select(g => new { ProjectId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.ProjectId, x => x.Count, cancellationToken);
+
+        Dictionary<Guid, int> pageCounts = await context.Pages
+            .Where(p => projectIds.Contains(p.Section.ProjectId) && p.RecordStatus != RecordStatus.Deleted)
+            .GroupBy(p => p.Section.ProjectId)
+            .Select(g => new { ProjectId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.ProjectId, x => x.Count, cancellationToken);
+        
         // Mapping
         List<ProjectResponse>? projectResponses = mapper.Map<List<ProjectResponse>>(pagedProjects);
-
+        foreach (ProjectResponse projectResponse in projectResponses)
+        
+        {
+            projectResponse.SectionCount = sectionCounts.GetValueOrDefault(projectResponse.Id, 0);
+            projectResponse.PageCount = pageCounts.GetValueOrDefault(projectResponse.Id, 0);
+        }
+        
         var pagedResult = new PagedResult<ProjectResponse>
         {
             Items = projectResponses,
