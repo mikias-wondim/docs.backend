@@ -1,3 +1,4 @@
+using Domain.Sections;
 using SharedKernel;
 
 namespace Domain.Pages;
@@ -15,7 +16,10 @@ public sealed class Page : Entity
 
     public IReadOnlyCollection<string> Tags => _tags.AsReadOnly();
     public IReadOnlyCollection<Page> Children => _children.AsReadOnly();
-
+    
+    public Section Section { get; init; }
+    public Page? ParentPage { get; init; }
+    
     public Page() { } // EF Core
 
     public Page(

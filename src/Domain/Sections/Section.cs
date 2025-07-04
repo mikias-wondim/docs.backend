@@ -1,3 +1,4 @@
+using Domain.Pages;
 using Domain.ProjectMembers;
 using Domain.Projects;
 using Domain.Users;
@@ -10,18 +11,15 @@ public sealed class Section : Entity
     public Guid ProjectId { get; private set; }
     public string Name { get; private set; }
     public string? Description { get; private set; }
+    public int Order { get; private set; }
 
     public SectionVisibility Visibility { get; private set; }
     public string? Password { get; private set; }
-
-    // Access control
     public List<ProjectRole>? AllowedRoles { get; private set; }
     public List<SectionUserAccess> AllowedUsers { get; private set; } = [];
-
-    public int Order { get; private set; }
-
-    // Navigation properties
+    
     public Project Project { get; set; }
+    public List<Page> Pages { get; set; }
 
     // Required by EF
     public Section() { }

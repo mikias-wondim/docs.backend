@@ -161,6 +161,78 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("Invitations", "dbo");
                 });
 
+            modelBuilder.Entity("Domain.Pages.Page", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentMd")
+                        .HasMaxLength(100000)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Order")
+                        .HasPrecision(16, 6)
+                        .HasColumnType("decimal(16,6)");
+
+                    b.Property<Guid?>("ParentPageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RecordStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SectionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("_tags")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Tags");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentPageId");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("Pages", "dbo");
+                });
+
             modelBuilder.Entity("Domain.ProjectMembers.ProjectMember", b =>
                 {
                     b.Property<Guid>("Id")
@@ -547,6 +619,24 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("Domain.Pages.Page", b =>
+                {
+                    b.HasOne("Domain.Pages.Page", "ParentPage")
+                        .WithMany()
+                        .HasForeignKey("ParentPageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.Sections.Section", "Section")
+                        .WithMany("Pages")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentPage");
+
+                    b.Navigation("Section");
+                });
+
             modelBuilder.Entity("Domain.ProjectMembers.ProjectMember", b =>
                 {
                     b.HasOne("Domain.Projects.Project", "Project")
@@ -619,6 +709,8 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("Domain.Sections.Section", b =>
                 {
                     b.Navigation("AllowedUsers");
+
+                    b.Navigation("Pages");
                 });
 
             modelBuilder.Entity("Domain.Users.User", b =>

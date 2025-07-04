@@ -20,7 +20,7 @@ internal sealed class Update: IEndpoint
         List<Guid>? AllowedUserIds);
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPut("/projects/sections/{sectionId:guid}", async (
+        app.MapPut("sections/{sectionId:guid}", async (
                 [FromRoute] Guid sectionId,
                 [FromBody] Request request,
                 ICommandHandler<UpdateSectionCommand> handler,

@@ -6,15 +6,16 @@ using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
-namespace Application.Features.Sections.Update;
+namespace Application.Features.Sections.Delete;
 
-internal sealed class UpdateSectionCommandHandler(
+internal sealed class DeleteSectionCommandHandler(
     IApplicationDbContext context,
     IUserContext userContext,
-    IDateTimeProvider dateTimeProvider): ICommandHandler<UpdateSectionCommand>
+    IDateTimeProvider dateTimeProvider) : ICommandHandler<DeleteSectionCommand>
 {
     private IDateTimeProvider DateTimeProvider { get; } = dateTimeProvider;
-    public async Task<Result> Handle(UpdateSectionCommand command, CancellationToken cancellationToken)
+
+    public async Task<Result> Handle(DeleteSectionCommand command, CancellationToken cancellationToken)
     {
         Guid currentUserId;
         try
@@ -25,17 +26,17 @@ internal sealed class UpdateSectionCommandHandler(
         {
             return Result.Failure<Guid>(UserErrors.Unauthorized);
         }
-        
+
         User? user = await context.Users.AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
 
         if (user is null)
         {
-            return Result.Failure<Guid>(UserErrors.NotFound(currentUserId));       
+            return Result.Failure<Guid>(UserErrors.NotFound(currentUserId));
         }
-        
+
         Section? section = await context.Sections
-            .Include(s => s.AllowedUsers) 
+            .Include(s => s.AllowedUsers)
             .Include(s => s.Project)
             .ThenInclude(p => p.Members)
             .FirstOrDefaultAsync(s => s.Id == command.SectionId, cancellationToken);
@@ -52,30 +53,12 @@ internal sealed class UpdateSectionCommandHandler(
         {
             return Result.Failure<Guid>(UserErrors.Forbidden);
         }
-        
-        if (command.AllowedUserIds is not null && command.AllowedUserIds.Count > 0)
-        {
-            int found = await context.Users
-                .Where(u => command.AllowedUserIds.Contains(u.Id))
-                .CountAsync(cancellationToken);
 
-            if (found != command.AllowedUserIds.Count)
-            {
-                return Result.Failure(SectionErrors.AllowedUsersNotFound);
-            }
-        }
+        string deletedBy = $"{user.FirstName} {user.LastName} ({user.Id})";
 
-        string updatedBy = $"{user.FirstName} {user.LastName} ({user.Id})";
-        
-        section.Update(
-            command.Name,
-            command.Description,
-            command.Visibility,
-            command.Password,
-            command.AllowedRoles,
-            command.AllowedUserIds ?? [],
-            updatedBy,
-            DateTimeProvider.GetNow
+        section.Delete(
+            DateTimeProvider.GetNow,
+            deletedBy
         );
 
         await context.SaveChangesAsync(cancellationToken);

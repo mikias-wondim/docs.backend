@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Domain.Auth;
 using Domain.Invitations;
+using Domain.Pages;
 using Domain.ProjectMembers;
 using Domain.Projects;
 using Domain.Sections;
@@ -24,6 +25,7 @@ public sealed class ApplicationDbContext(
     public DbSet<Invitation> Invitations { get; set; }
     public DbSet<Section> Sections { get; set; }
     public DbSet<SectionUserAccess> SectionUserAccesses { get; set; }
+    public DbSet<Page> Pages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

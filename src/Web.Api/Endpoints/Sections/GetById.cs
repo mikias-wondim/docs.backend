@@ -12,7 +12,7 @@ internal sealed class GetById : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapGet("/projects/sections/{sectionId:guid}", async (
+        app.MapGet("sections/{sectionId:guid}", async (
                 [FromRoute]Guid sectionId,
                 [FromQuery]string? password,
                 IQueryHandler<GetSectionByIdQuery, SectionResponse> handler,
