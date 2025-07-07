@@ -1,6 +1,8 @@
+using SharedKernel;
+
 namespace Application.Features.Pages;
 
-public sealed class PageSummaryResponse
+public sealed class PageSummaryResponse: EntityResponse
 {
     public Guid SectionId { get; init; }
     public Guid? ParentPageId { get; init; }
