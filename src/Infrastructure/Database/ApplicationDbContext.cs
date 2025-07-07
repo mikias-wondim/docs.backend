@@ -36,6 +36,11 @@ public sealed class ApplicationDbContext(
         modelBuilder.HasDefaultSchema(Schemas.Default);
     }
 
+    public IQueryable<TEntity> FromSqlInterpolated<TEntity>(FormattableString sql) 
+        where TEntity : class
+    {
+        return Set<TEntity>().FromSqlInterpolated(sql);
+    }
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         int result = await base.SaveChangesAsync(cancellationToken);

@@ -23,6 +23,7 @@ public interface IApplicationDbContext
     DbSet<Page> Pages { get; }
     DbSet<Faq> Faqs { get; }
 
-
+    IQueryable<TEntity> FromSqlInterpolated<TEntity>(FormattableString sql) 
+        where TEntity : class;
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
