@@ -47,7 +47,6 @@ if (app.Environment.IsDevelopment())
     // await app.ApplyMigrations();
 }
 
-// ⚠️ TODO: CORS must come before auth & controller handling
 app.UseCors("DevCorsPolicy");
 
 app.MapHealthChecks("/health", new HealthCheckOptions
@@ -62,6 +61,8 @@ app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseUploadStaticFile();
 
 app.MapEndpoints();
 

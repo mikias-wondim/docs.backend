@@ -2,6 +2,7 @@
 using Domain.Auth;
 using Domain.Faqs;
 using Domain.Invitations;
+using Domain.Media;
 using Domain.Pages;
 using Domain.ProjectMembers;
 using Domain.Projects;
@@ -28,6 +29,7 @@ public sealed class ApplicationDbContext(
     public DbSet<SectionUserAccess> SectionUserAccesses { get; set; }
     public DbSet<Page> Pages { get; set; }
     public DbSet<Faq> Faqs { get; set; }
+    public DbSet<MediaAsset> MediaAssets { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

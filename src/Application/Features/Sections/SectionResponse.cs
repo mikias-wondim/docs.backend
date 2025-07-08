@@ -1,5 +1,6 @@
 using Application.Features.Pages;
 using Application.Features.Projects;
+using Domain.Media;
 using Domain.ProjectMembers;
 using Domain.Sections;
 using SharedKernel;
@@ -21,7 +22,8 @@ public sealed class SectionResponse: EntityResponse
     public List<SectionUserAccessResponse> AllowedUsers { get; init; } = [];
     
     public ProjectSummaryResponse Project { get; init; }
-    public List<PageResponse> Pages { get; set; } = []; 
+    public List<PageResponse> Pages { get; set; } = [];
+    public List<MediaAsset> MediaAssets { get; set; }
 }
 
 

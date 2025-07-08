@@ -3,11 +3,13 @@ using System.Text;
 using Application.Abstractions.Authentication;
 using Application.Abstractions.Data;
 using Application.Abstractions.Services.Email;
+using Application.Abstractions.Services.Files;
 using Infrastructure.Authentication;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
 using Infrastructure.DomainEvents;
 using Infrastructure.Services.Email;
+using Infrastructure.Services.Files;
 using Infrastructure.Time;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -31,7 +33,8 @@ public static class DependencyInjection
             .AddHealthChecks(configuration)
             .AddAuthenticationInternal(configuration)
             .AddAuthorizationInternal()
-            .AddEmailService(configuration);
+            .AddEmailService(configuration)
+            .AddFileService();
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
@@ -126,6 +129,13 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailVerificationService, EmailVerificationService>();
         services.AddScoped<IEmailInvitationService, EmailInvitationService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddFileService(this IServiceCollection services)
+    {
+        services.AddScoped<IFileService, LocalFileService>();
 
         return services;
     }

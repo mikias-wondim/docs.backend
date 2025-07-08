@@ -1,3 +1,4 @@
+using Domain.Media;
 using Domain.Pages;
 using Domain.ProjectMembers;
 using Domain.Projects;
@@ -21,6 +22,7 @@ public sealed class Section : Entity
     
     public Project Project { get; set; }
     public List<Page> Pages { get; set; }
+    public List<MediaAsset> MediaAssets { get; set; }
 
     // Required by EF
     public Section() { }

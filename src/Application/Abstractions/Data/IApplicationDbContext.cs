@@ -1,6 +1,7 @@
 ﻿using Domain.Auth;
 using Domain.Faqs;
 using Domain.Invitations;
+using Domain.Media;
 using Domain.Pages;
 using Domain.ProjectMembers;
 using Domain.Projects;
@@ -22,7 +23,8 @@ public interface IApplicationDbContext
     DbSet<SectionUserAccess> SectionUserAccesses { get; }
     DbSet<Page> Pages { get; }
     DbSet<Faq> Faqs { get; }
-
+    DbSet<MediaAsset> MediaAssets { get; }
+    
     IQueryable<TEntity> FromSqlInterpolated<TEntity>(FormattableString sql) 
         where TEntity : class;
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

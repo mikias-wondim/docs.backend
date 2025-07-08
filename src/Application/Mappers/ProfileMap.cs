@@ -1,5 +1,6 @@
 using Application.Features.Faqs;
 using Application.Features.Invitations;
+using Application.Features.Media;
 using Application.Features.Pages;
 using Application.Features.ProjectMembers;
 using Application.Features.Projects;
@@ -8,6 +9,7 @@ using Application.Features.Users;
 using AutoMapper;
 using Domain.Faqs;
 using Domain.Invitations;
+using Domain.Media;
 using Domain.Pages;
 using Domain.ProjectMembers;
 using Domain.Projects;
@@ -34,5 +36,6 @@ public class ProfileMap : Profile
         CreateMap<Page, PageResponse>();
         CreateMap<Page, PageSummaryResponse>();
         CreateMap<Faq, FaqResponse>();
+        CreateMap<MediaAsset, MediaAssetResponse>();
     }
 }

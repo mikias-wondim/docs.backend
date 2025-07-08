@@ -47,7 +47,6 @@ public class Result<TValue>(TValue? value, bool isSuccess, Error error) : Result
         new(default, false, error);
 }
 
-
 public sealed class PagedResult<T>
 {
     public IReadOnlyList<T> Items { get; init; } = [];
