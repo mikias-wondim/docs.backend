@@ -1,6 +1,7 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using AutoMapper;
+using Domain.Invitations;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -27,11 +28,15 @@ internal sealed class SearchUsersByProjectIdQueryHandler(
         IQueryable<User> usersQuery = context.Users
             .AsNoTracking()
             .Where(u =>
-                    u.Id != ownerId &&
-                    !u.ProjectMembers.Any(pm =>
-                        pm.ProjectId == query.ProjectId &&
-                        pm.RecordStatus == RecordStatus.Active)
+                u.Id != ownerId &&
+                !u.ProjectMembers.Any(pm =>
+                    pm.ProjectId == query.ProjectId &&
+                    pm.RecordStatus == RecordStatus.Active) &&
+                !u.Invitations.Any(inv =>
+                    inv.ProjectId == query.ProjectId &&
+                    inv.Status == InvitationStatus.Pending)
             );
+
         string pattern = $"%{query.Query}%";
 
         usersQuery = usersQuery.Where(u =>

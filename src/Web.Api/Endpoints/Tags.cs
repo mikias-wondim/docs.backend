@@ -11,4 +11,5 @@ public static class Tags
     public const string Pages = "pages";
     public const string Faqs = "faqs";
     public const string Media = "media";
+    public const string Feedback = "feedback";
 }

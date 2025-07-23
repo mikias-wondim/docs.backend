@@ -1,5 +1,6 @@
 ﻿using Domain.Auth;
 using Domain.Faqs;
+using Domain.Feedbacks;
 using Domain.Invitations;
 using Domain.Media;
 using Domain.Pages;
@@ -24,6 +25,7 @@ public interface IApplicationDbContext
     DbSet<Page> Pages { get; }
     DbSet<Faq> Faqs { get; }
     DbSet<MediaAsset> MediaAssets { get; }
+    DbSet<Feedback> Feedbacks { get; }
     
     IQueryable<TEntity> FromSqlInterpolated<TEntity>(FormattableString sql) 
         where TEntity : class;

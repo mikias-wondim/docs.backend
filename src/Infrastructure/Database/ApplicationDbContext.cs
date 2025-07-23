@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Domain.Auth;
 using Domain.Faqs;
+using Domain.Feedbacks;
 using Domain.Invitations;
 using Domain.Media;
 using Domain.Pages;
@@ -30,6 +31,7 @@ public sealed class ApplicationDbContext(
     public DbSet<Page> Pages { get; set; }
     public DbSet<Faq> Faqs { get; set; }
     public DbSet<MediaAsset> MediaAssets { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
