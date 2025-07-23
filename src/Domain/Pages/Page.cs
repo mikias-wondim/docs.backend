@@ -21,7 +21,7 @@ public sealed class Page : Entity
     
     public Section Section { get; init; }
     public Page? ParentPage { get; init; }
-    public List<Faq> Faqs { get; set; }
+    public List<Faq> Faqs { get; init; }
     public List<Feedback> Feedbacks { get; set; }
     
     public Page() { } // EF Core
